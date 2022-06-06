@@ -1,0 +1,55 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin:0;
+}
+
+.container {
+    background-color: aquamarine;
+    display: flex;
+    height: 80%;
+    width: 60%;
+}
+
+.tab {
+    width: 50px;
+    height: 50px;
+    align-self: flex-end;
+    justify-self: start;
+    margin: 5px;
+    border-radius: 50%;
+}
+
+.blue-tab{
+    background-color: blue;
+}
+
+.blue-tab:hover{
+    border-style: solid;
+    border-color: yellow;
+    border-width: 3px;
+}
+
+.blue-tab-hold{
+    border-style: solid;
+    border-color: yellow;
+    border-width: 3px;
+    background-color: rgba(0, 0, 98, 0.941);
+}
+
+.green{
+    background-color: green;
+}
+
+.casilla-vertical{
+    width: ;
+    height: ;
