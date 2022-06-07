@@ -78,3 +78,43 @@ html, body {
     margin-top: 714px;
     margin-left: 274px;                                                             
 }
+
+#homeGreen{
+    margin-left: 670px;
+    margin-top: 30px;
+}
+
+#salidaGreen{
+    margin-top: 274px;
+    margin-left: 714px;
+}
+
+#seguro1Green{
+    margin-top: 392px;
+    margin-left: 862px;
+}
+
+#seguro2Green{
+    margin-top: 148px;
+    margin-left: 510px;                                                           
+}
+
+#homeRed{
+    margin-left: 670px;
+    margin-top: 670px;
+}
+
+#salidaRed{
+    margin-top: 714px;
+    margin-left: 510px;  
+}
+
+#seguro1Red{
+    margin-top: 862px;
+    margin-left: 392px;
+}
+
+#seguro2Red{
+    margin-top: 510px;
+    margin-left: 714px;                                                           
+}
