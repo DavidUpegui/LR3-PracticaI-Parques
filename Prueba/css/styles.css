@@ -1,0 +1,80 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin:0;
+}
+
+.home{
+    height: 200px;
+    width: 200px;
+    background-color: aliceblue;
+    position: absolute;
+}
+
+.casillaVertical{
+    height: 118px;
+    width: 38px;
+    background-color: blueviolet;
+    position: absolute;
+}
+
+.casillaHorizontal{
+    height: 38px;
+    width: 118px;
+    background-color: aqua;
+    position: absolute;
+}
+
+#tablero {
+    height: 900px;
+    width: 900px;
+    background-image: url("tablero.png");
+    background-size: cover;
+}
+
+#homeBlue{
+    margin-left: 30px;
+    margin-top: 30px;
+}
+
+#seguro1Blue{
+    margin-left: 392px;
+}
+
+#salidaBlue{
+    margin-left: 274px;
+    margin-top: 148px;
+}
+
+#seguro2Blue{
+    margin-top: 274px;
+    margin-left: 148px;
+}
+
+#homeYellow{
+    margin-left: 30px;
+    margin-top: 670px;
+}
+
+#salidaYellow{
+    margin-top: 510px;
+    margin-left: 148px;
+}
+
+#seguro1Yellow{
+    margin-top: 392px;
+}
+
+#seguro2Yellow{
+    margin-top: 714px;
+    margin-left: 274px;                                                             
+}
