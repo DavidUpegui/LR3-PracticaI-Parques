@@ -25,22 +25,12 @@ class Tab{
     _tabId;
     _tabIndex;
     _currentSquare; 
-
-    constructor(tabColor, tabIndex, q){
+    
+    
+    constructor(tabColor, tabIndex){
         this._tabColor = tabColor;
         this._tabIndex = tabIndex;
         this._tabId = tabColor +'Tab'+ tabIndex;
-        this._currentSquare = new Casilla(tabColor, 'House');
-        let band = false;
-        q = primero.siguienteCasilla;
-        while(!band){
-            if (primero.id === tabColor + 'Salida'){
-                this._currentSquare.siguienteCasilla = q
-                band = true;
-            } else{
-                q = q.siguienteCasilla.siguienteCasilla;
-            }
-        }
     }
 
     get tabColor(){
@@ -64,23 +54,48 @@ class Tab{
     }
 }
 
+class TabController{
+
+    generateTabs(player, recorrido){
+        let tab;
+        let recorridoController = new RecorridoController();
+        let arr = []
+        for(let i = 0; i< player.tabsQuantity; i++){
+            tab = new Tab(player.color, i);
+            tab.currentSquare = recorridoController.getHouse(recorrido, tab.tabColor);
+            arr.push(tab);
+        }
+        player.tabsArray = arr;
+        return arr;
+    }
+}
 class Player{
-    _tabs;
+    _tabsArray;
     _color;
     _name;
     _tabsQuantity;
 
-    constructor(tabsQuantity, color){
+    constructor(color, tabsQuantity){
         this._color =color;
         this,this._tabsQuantity = tabsQuantity;
     }
-
     get tabs(){
-        return this._tabs;
+        return this._tabsArray;
     }
-
     set tabs(tabs){
         this._tabs = tabs;
+    }
+    get tabsQuantity(){
+        return this._tabsQuantity;
+    }
+    set tabsQuantity(tabsQuantity){
+        this._tabsQuantity = tabsQuantity;
+    }
+    get color(){
+        return this._color;
+    }
+    set color(color){
+        this._color = color;
     }
 }
 //Clase tablero
@@ -90,6 +105,7 @@ class BoardPOO{
     _nTabs;
     _recorrido;
     _tabsArray;
+    _housesArray;
 
     constructor(boardSize,nTabs){
         this._boardSize = boardSize;
@@ -105,7 +121,33 @@ class BoardPOO{
             recorrido.agregarCasilla(new Salida(this._colors[i]));
             recorrido.agregarCasilla(new SeguroDos(this._colors[i]));
             }
+        this.addHouses(recorrido);
         return recorrido
+    }
+
+    addHouses(recorrido){
+        let housesArray = [];
+        let houseSquare;
+        q = recorrido.primero.siguienteCasilla;
+        while(!band){
+            if (q.type === 'Salida'){
+                houseSquare = new Casilla(q.color, 'House');
+                houseSquare._siguienteCasilla = q;
+                housesArray.push(houseSquare);
+            } else{
+                q = q.siguienteCasilla.siguienteCasilla;
+            }
+        }
+
+    }
+
+    getHouse(color){
+        let houseArray = this._housesArray;
+        houseArray.forEach(house =>{
+            if (house.color === 'color'){
+                return house
+            }
+        })
     }
 
     generateTabs(nTabs, boardSize){
@@ -130,7 +172,7 @@ class BoardPOO{
     }
 }
 
-//Clase Casilla
+//Clases para las casillas ---------------------------------------------------------------------
 class Casilla{
     _color;
     _type;
@@ -147,7 +189,9 @@ class Casilla{
     get color(){
         return this._color;
     }
-
+    set color(color){
+        this._color = color;
+    }
     get type(){
         return this._type;
     }
@@ -213,7 +257,6 @@ class SeguroDos extends Casilla{
 }
 
 class Salida extends Casilla{
-    _type = 'salida'
 
     constructor(color){
         super(color, 'Salida')
@@ -271,6 +314,7 @@ class GameControl{
 class Recorrido{
     _primero = null;
     _ultimo = null;
+    _houseArray;
 
     constructor(){
     }
@@ -290,25 +334,71 @@ class Recorrido{
     esVacia(){
         return this._primero === null;
     }
-
     finDeRecorrido(casilla){
-        return casilla == this.primero;
+        return casilla === this.primero;
     }
-
     set primero(primero){
         this._primero = primero
     }
-
     set ultimo(ultimo){
         this._ultimo = ultimo;
     }
-
     get primero(){
         return this._primero;
     }
-
     get ultimo(){
         return this._ultimo;
+    }
+    get houseArray(){
+        return this._houseArray;
+    }
+    set houseArray(houseArray){
+        this._houseArray = houseArray;
+    }
+}
+
+class RecorridoController{
+    _colors = ['blue', 'yellow', 'red', 'green','orange','pink'];
+
+    generateRecorrido(boardSize){
+        let recorrido = new Recorrido();
+        for( let i = 0; i < boardSize; i++){
+            recorrido.agregarCasilla(new SeguroUno(this._colors[i]));
+            recorrido.agregarCasilla(new Salida(this._colors[i]));
+            recorrido.agregarCasilla(new SeguroDos(this._colors[i]));
+            }
+        this.addHouses(recorrido);
+        return recorrido
+    }
+
+    addHouses(recorrido){
+        let housesArray = [];
+        let houseSquare;
+        let q = recorrido.primero;
+        while(!recorrido.finDeRecorrido(q)){
+            let qType = q.type;
+            if (qType === 'Salida'){
+                houseSquare = new Casilla(q.color, 'House');
+                houseSquare._siguienteCasilla = q;
+                housesArray.push(houseSquare);
+                q = q.siguienteCasilla;
+            } else{
+                q = q.siguienteCasilla;
+            }
+        }
+        recorrido.houseArray = housesArray
+    }
+
+    getHouse(recorrido,color){
+        let houseArray = recorrido.houseArray;
+        console.log(houseArray)
+        let comparedColor;
+        for(let i = 0; i<= houseArray.length-1; i++){
+            comparedColor = houseArray[i].color;
+            if (comparedColor === color){
+                return houseArray[i];
+            }
+        }
     }
 }
 
@@ -332,8 +422,6 @@ class Turn{
     get player(){
         return this._player;
     }
-
-
 }
 
 class TurnController{
@@ -414,12 +502,19 @@ class Game{
     }
 }
 
-let turnController = new TurnController();
-let player = new Player(4,'blue');
-let board = new BoardPOO(4,4);
-player._tabs = board._tabsArray[0];
-console.log(board._tabsArray[0]);
-console.log(turnController.searchTabById('blueTab0',player));
+var size = 4;
+const recorridoControler = new RecorridoController();
+const tabController = new TabController();
+const player = new Player('Blue', 4);
+var recorrido = recorridoControler.generateRecorrido(size);
+console.log(recorridoControler.getHouse('blue'));
+
+console.log(tabController.generateTabs(player,recorrido))
+
+
+
+
+
 
 
 
