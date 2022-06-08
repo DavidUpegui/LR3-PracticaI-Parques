@@ -1,38 +1,6 @@
 /*
-//Clase Juego: desde Aquí se empieza 
-class Game{
-    num_player;
-    num_tab;
-    board;
-
-    constructor(num_tab){
-        this.num_tab = num_tab;
-    }
-
-    start(){
-        for(var i = 0; i<this.num_tab; i++){
-            let tab = new Tab('blue-tab', i);
-            tab.createHtmlTab();
-        }
-    }
-}
-
-//Clase Jugadr: Todavía no tiene papel representativo
-class Player{
-    name;
-    tabs;    
-}
-
-
-
-    constructor(tabClass, index){
-        this.tabClass = tabClass;
-        this.index = index;
-    }
-}
-
 class ui_tab{
-*/
+
     //Creo un div tab con id = tabPoo.className + tab.index... Posibilidad de eliminar el index attribute
     createHtmlTab(tab){
         let tabHtml = document.createElement('div');
@@ -49,20 +17,30 @@ class ui_tab{
         return tabHtml;
     }
 }
-
+*/
 
 // Clase Ficha
 class Tab{
     _tabColor;
     _tabId;
     _tabIndex;
-    _currentSquare;
+    _currentSquare; 
 
-    constructor(tabColor, tabIndex){
+    constructor(tabColor, tabIndex, q){
         this._tabColor = tabColor;
         this._tabIndex = tabIndex;
-        this._tabId = tabColor +'Tab'+(tabIndex+1);
-        this._currentSquare = tabColor + 'house';
+        this._tabId = tabColor +'Tab'+ tabIndex;
+        this._currentSquare = new Casilla(tabColor, 'House');
+        let band = false;
+        q = primero.siguienteCasilla;
+        while(!band){
+            if (primero.id === tabColor + 'Salida'){
+                this._currentSquare.siguienteCasilla = q
+                band = true;
+            } else{
+                q = q.siguienteCasilla.siguienteCasilla;
+            }
+        }
     }
 
     get tabColor(){
@@ -77,19 +55,41 @@ class Tab{
         return this._tabIndex;
     }
 
+    get currentSquare(){
+        return this._currentSquare;
+    }
+
     set currentSquare(currentSquare){
         this._currentSquare = currentSquare;
     }
 }
 
+class Player{
+    _tabs;
+    _color;
+    _name;
+    _tabsQuantity;
+
+    constructor(tabsQuantity, color){
+        this._color =color;
+        this,this._tabsQuantity = tabsQuantity;
+    }
+
+    get tabs(){
+        return this._tabs;
+    }
+
+    set tabs(tabs){
+        this._tabs = tabs;
+    }
+}
 //Clase tablero
 class BoardPOO{
-    _squareTypes = ['seguroUno', 'salida' , 'seguroDos'];
     _colors = ['blue', 'yellow', 'red', 'green','orange','pink'];
     _boardSize;
     _nTabs;
     _recorrido;
-    _tabsArray
+    _tabsArray;
 
     constructor(boardSize,nTabs){
         this._boardSize = boardSize;
@@ -101,11 +101,10 @@ class BoardPOO{
     generateRecorrido(boardSize){
         let recorrido = new Recorrido();
         for( let i = 0; i < boardSize; i++){
-            this._squareTypes.forEach(type =>{
-                let casilla = new Casilla(this._colors[i], type);
-                recorrido.agregarCasilla(casilla);
-            })
-        }
+            recorrido.agregarCasilla(new SeguroUno(this._colors[i]));
+            recorrido.agregarCasilla(new Salida(this._colors[i]));
+            recorrido.agregarCasilla(new SeguroDos(this._colors[i]));
+            }
         return recorrido
     }
 
@@ -134,21 +133,27 @@ class BoardPOO{
 //Clase Casilla
 class Casilla{
     _color;
-    _tipo;
+    _type;
+    _id;
     _fichasDentro;
     _siguienteCasilla = null;
 
-    constructor(color, tipo){
+    constructor(color, type){
         this._color=color;
-        this._tipo = tipo;
+        this._type = type;
+        this._id = color + type;
     }
 
     get color(){
         return this._color;
     }
 
-    get tipo(){
-        return this._tipo;
+    get type(){
+        return this._type;
+    }
+
+    get id(){
+        return this._id;
     }
 
     get fichasDentro(){
@@ -159,15 +164,109 @@ class Casilla{
         return this._siguienteCasilla
     }
 
-    set tipo(tipo){
-        this._tipo = tipo;
+    set type(type){
+        this._type = type;
     }
+
     set siguienteCasilla(siguienteCasilla){
         this._siguienteCasilla = siguienteCasilla;
     }
 }
 
+class SeguroUno extends Casilla{
 
+    constructor(color){
+        super(color, 'SeguroUno');
+    }
+
+    casillasDisponibles(){
+        if(clave === '5'){
+            let casillaDisponible = this.siguienteCasilla;
+        }
+        else if(clave == '12'){
+            let casillaDisponible = this.siguienteCasilla.siguienteCasilla;
+        }
+        else{
+            console.log('Pasa turno.')
+        }
+    }
+}
+
+class SeguroDos extends Casilla{
+    _type = 'seguroDos'
+
+    constructor(color){
+        super(color, 'SeguroDos');
+    }
+
+    casillasDisponibles(){
+        if(clave === '5'){
+            let casillaDisponible = this.siguienteCasilla;
+        }
+        else if(clave == '10'){
+            let casillaDisponible = this.siguienteCasilla.siguienteCasilla;
+        }
+        else{
+            console.log('Pasa turno.')
+        }
+    }
+}
+
+class Salida extends Casilla{
+    _type = 'salida'
+
+    constructor(color){
+        super(color, 'Salida')
+    }
+    casillasDisponibles(){
+        if(clave === '7'){
+            let casillaDisponible = this.siguienteCasilla;
+        }
+        else if(clave == '12'){
+            let casillaDisponible = this.siguienteCasilla.siguienteCasilla;
+        }
+        else{
+            console.log('Pasa turno.')
+        }
+    }
+}
+
+class GameControl{
+
+    allMovTabs(n,player){
+        let totalTabs = player.tabs;
+        let movableTabs = [];
+        totalTabs.forEach( tab => {
+            if(this.isMovable(tab,n)){
+                movableTabs.push(tab);
+            }
+        });
+        return movableTabs
+    }
+
+    isMovable(tab,n){
+        let currentSquare = tab.currentSquare;
+        switch(tab.currentSquare.type){
+            case 'seguroUno':
+                if(n === 5 || n == 12){
+                    return true;
+                }
+                break;
+            case 'salida':
+                if(n === 7 || n == 12){
+                    return true;
+                }
+                break;
+            case 'seguroDos':
+                if(n === 5 || n == 10){
+                    return true;
+                }
+                break;
+            default:
+                return false;
+        }
+    }
+}
 //Clase Recorrido
 class Recorrido{
     _primero = null;
@@ -212,6 +311,117 @@ class Recorrido{
         return this._ultimo;
     }
 }
+
+class Turn{
+    _player;
+    _nextTurn = null;
+    _par = 1;
+    
+    set par(par){
+        this._par = par;
+    }
+
+    get par(){
+        return this._par;
+    }
+
+    set player(player){
+        this._player = player;
+    }
+
+    get player(){
+        return this._player;
+    }
+
+
+}
+
+class TurnController{
+    _par;
+
+    gameController = new GameControl();
+
+    throwDados(){
+        let arr = [];
+        //Sacar los números random
+        let a = 1;
+        let b = 2;
+
+        arr.push(a);
+        arr.push(b);
+        return arr;
+    }
+
+    searchTabById(id, player){
+        let index = id[id.length-1]
+        return player.tabs[parseInt(index)]
+    }
+
+    isPar(n){
+        return n[0] === n[1];
+    }
+
+    threePar(turn){
+        return turn.par === 3;
+    }
+
+    tabWon(tab){
+        tab.state = 'win';
+    }
+
+    makeTurn(turn){
+        let values = this.throwDados();
+        if(this.isPar(values)){
+            turn.par = turn.par + 1;
+            if (this.threePar(turn)){
+                //Se le activa un eventListener a las tabs que no esten en estado = "win" y que estén en el arreglo del player (Método UI)
+                //Un método de UI que permita obtener el id de una ficha clickeada
+                let id = 'blueTab0'
+                let tab = this.searchTabById(id,player);
+                this.tabWon(tab);
+                turn.nextTurn();
+            } 
+            this.makeTurn(turn);
+        } else{
+            allMovTabs(values[0]+values[1],turn.player);
+            //Agregar eventos a las casillas de HTML o retornar allMovaTabs para hacer el proceso en las clases UI
+            //También se puede insertar el Método UI directamente acá, haciendo que las clases de Lógica de Negocio sean como **LAS CLASES CREADORAS** 
+        }
+    }
+}
+
+class Game{
+
+    startGame(){
+        /*
+        EMPIEZA EL JUEGO:
+        - Crea las estructuras de datos en el POO
+            - Jugadores
+            - Fichas
+                - Todas las fichas empiezan en la casilla house de su color
+                    - La casilla house de cada color está ligada a la casilla salida de cada color
+            - Recorrido + casillas
+            - Turnos
+                - Empieza con un orden default de turnos
+        - Crea las estructuras de datos en el DOM
+            - Jugadores
+            - Fichas
+            - Casillas
+            - Mapa selecto
+
+            ¿Retorna los turnos en un arreglo?
+        */
+    }
+}
+
+let turnController = new TurnController();
+let player = new Player(4,'blue');
+let board = new BoardPOO(4,4);
+player._tabs = board._tabsArray[0];
+console.log(board._tabsArray[0]);
+console.log(turnController.searchTabById('blueTab0',player));
+
+
 
 /*
 function tabSelected(tab){
