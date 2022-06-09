@@ -92,6 +92,22 @@ class TabController{
         }
         return arr;
     }
+
+    isInHouse(tab){
+        return tab.currentSquare.type === 'House';
+    }
+
+    searchTabById(id,game){
+        let playersArray = game.players;
+        let player;
+        let index = parseInt(id[id.length-1]);
+        for (let i = 0; i < playersArray.length ; i++){
+            player = playersArray[i];
+            player.tabsArray[index]  if (player.tabsArray[index].id === id){
+                return player.tabsArray[index];
+            }  
+        }
+    }
 }
 class Player{
     _tabsArray;
@@ -309,7 +325,7 @@ class GameControl{
         }
     }
 }
-//Clase Recorrido
+
 class Recorrido{
     _primero = null;
     _ultimo = null;
@@ -381,9 +397,9 @@ class RecorridoController{
     generateRecorrido(boardSize){
         let recorrido = new Recorrido();
         for( let i = 0; i < boardSize; i++){
-            recorrido.agregarCasilla(new SeguroUno(GameController.colorsArray[i]));
-            recorrido.agregarCasilla(new Salida(GameController.colorsArray[i]));
-            recorrido.agregarCasilla(new SeguroDos(GameController.colorsArray[i]));
+            recorrido.agregarCasilla(new SeguroUno(GameController.colorsArray()[i]));
+            recorrido.agregarCasilla(new Salida(GameController.colorsArray()[i]));
+            recorrido.agregarCasilla(new SeguroDos(GameController.colorsArray()[i]));
             }
         this.addHouses(recorrido);
         return recorrido
@@ -429,17 +445,39 @@ class Turn{
     set par(par){
         this._par = par;
     }
-
     get par(){
         return this._par;
     }
-
     set player(player){
         this._player = player;
     }
-
     get player(){
         return this._player;
+    }
+}
+
+class Round{
+    _turns;
+    _firstTurn;
+    _lastTurn;
+
+    get firstTurn(){
+        return this._firstTurn
+    }
+    set firstTurn(firstTurn){
+        this._firstTurn = firstTurn;
+    }
+    get lastTurn(){
+        return this._lastTurn
+    }
+    set lastTurn(lastTurn){
+        this._lastTurn = lastTurn;
+    }
+    get turns(){
+        return this._turns
+    }
+    set turns(turns){
+        this._turns = turns;
     }
 }
 
@@ -495,33 +533,37 @@ class TurnController{
             //También se puede insertar el Método UI directamente acá, haciendo que las clases de Lógica de Negocio sean como **LAS CLASES CREADORAS** 
         }
     }
+
+    //Turnos especiales:
+
+
 }
 
 class Game{
+    _players;
+    _route;
 
-    startGame(){
-        /*
-        EMPIEZA EL JUEGO:
-        - Crea las estructuras de datos en el POO
-            - Jugadores
-            - Fichas
-                - Todas las fichas empiezan en la casilla house de su color
-                    - La casilla house de cada color está ligada a la casilla salida de cada color
-            - Recorrido + casillas
-            - Turnos
-                - Empieza con un orden default de turnos
-        - Crea las estructuras de datos en el DOM
-            - Jugadores
-            - Fichas
-            - Casillas
-            - Mapa selecto
-
-            ¿Retorna los turnos en un arreglo?
-        */
+    constructor(players, route){
+        this._players = players;
+        this._route = route;
+    }
+    get players(){
+        return this._players;
+    }
+    set players(players){
+        this._players = this.players;
+    }
+    get route(){
+        return this._route;
+    }
+    set route(route){
+        this._route = this.route;
     }
 }
 class GameController{
-    
+    _routController = new RecorridoController();
+    _tabController = new TabController();
+    _playerController = new PlayerController();
 
     constructor(){}
     /**
@@ -531,18 +573,46 @@ class GameController{
     static colorsArray(){
         return ['blue', 'yellow', 'red', 'green','orange','pink'];
     }
+    /**
+     * 
+     * @param {Int} pN 
+     * @param {Int} tN 
+     * @param {Int} bS 
+     */
+    startGame(pN, tN, bS){
+        let route = this.routController.generateRecorrido(bS);
+        let players = this.playerController.generatePlayers(pN,tN);
+        let allTabs = this.tabController.generateAllTabs(players, route);
+        let game = new Game(players,route)
+        return game;
+        //Métodos UI
+    }
+
+    get routController(){
+        return this._routController;
+    }
+    set routController(routController){
+        this._routController = routController;
+    }
+    get tabController(){
+        return this._tabController;
+    }get players(){
+        return this._players;
+    }
+    set players(players){
+        this._players = this.players;
+    }
+    get playerController(){
+        return this._playerController;
+    }
+    set playerController(playerController){
+        this._playerController = playerController;
+    }
 }
-
-var size = 4;
-const recorridoControler = new RecorridoController();
-const tabController = new TabController();
-const playerController = new PlayerController();
-var recorrido = recorridoControler.generateRecorrido(size);
-var players = playerController.generatePlayers(4,4);
-var allTabs = tabController.generateAllTabs(players,recorrido);
-
-console.log(allTabs);
-
+let tabController = new TabController();
+let gameController = new GameController();
+let game = gameController.startGame(4,4,4);
+console.log(tabController.searchTabById('blueTab0', game));
 /* 
 var arrayTabs = tabController.generateTabs(player, recorrido); 
 console.log(arrayTabs);
@@ -560,15 +630,26 @@ function tabSelected(tab){
     if(tab.getAttribute('hold') === 'true'){
         deselect(tab);
     }else{
-        deselectAll('blue-tab');
-        select(tab);
-    } 
-}
-
-function select(tab){
-    tab.classList.toggle('blue-tab-hold');
-    tab.setAttribute('hold', 'true');
-}
+        deselecswitch (currentSquareType){
+                case 'SeguroUno':
+                    if((nT === 5) || (n1 === 5) || (n2 === 5)){
+                        return tab.currentSquare.siguienteCasilla
+                    } else if (nT === 12){
+                        return tab.currentSquare.siguienteCasilla.siguienteCasilla
+                    }
+                case 'Salida':
+                    if(n1+n2 === 7){
+                        return tab.currentSquare.siguienteCasilla;
+                    } else if(n1+n2 === 12){
+                        return tab.currentSquare,siguienteCasilla.siguienteCasilla;
+                    }
+                case 'SeguroDos':
+                if((nT === 5) || (n1 === 5) || (n2 === 5)){
+                    return tab.currentSquare.siguienteCasilla;
+                } else if(nT === 10){
+                    return tab.currentSquare.siguienteCasilla.siguienteCasilla;
+                }
+            }
 function deselect(tab){
     tab.classList.toggle('blue-tab-hold');
     tab.setAttribute('hold', 'false');
@@ -585,3 +666,10 @@ function deselectAll(className){
 */
 
 
+
+
+//Qué hay qué hacer
+
+//Empieza el juego
+
+//PENDIENTE: ASIGNAR TURNOS
