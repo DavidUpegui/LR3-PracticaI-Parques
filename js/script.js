@@ -5,7 +5,7 @@ class ui_tab{
     createHtmlTab(tab){
         let tabHtml = document.createElement('div');
         tabHtml.classList.add('tab');
-        tabHtml.classList.add(tab.tabColor);
+        tabHtml.classList.add(tab.color);
         tabHtml.setAttribute('id', tab.tabClass + tab.index);
         tabHtml.setAttribute('index', tab.index);
         tabHtml.setAttribute('hold', 'false');
@@ -19,36 +19,41 @@ class ui_tab{
 }
 */
 
-// Clase Ficha
+
+
 class Tab{
-    _tabColor;
-    _tabId;
-    _tabIndex;
+    _color;
+    _id;
     _currentSquare; 
     
-    
-    constructor(tabColor, tabIndex){
-        this._tabColor = tabColor;
-        this._tabIndex = tabIndex;
-        this._tabId = tabColor +'Tab'+ tabIndex;
+    constructor(color){
+        this._color = color;
     }
 
-    get tabColor(){
-        return this._tabColor;
+    get color(){
+        return this._color;
     }
-
-    get tabId(){
+    get id(){
         return this._id;
     }
-
-    get tabIndex(){
-        return this._tabIndex;
-    }
-
     get currentSquare(){
         return this._currentSquare;
     }
-
+    /**
+     * @param {string} color;
+     */
+    set color(color){
+        this._color = color;
+    }
+        /**
+     * @param {string} id;
+     */
+    set id(id){
+        this._id = id;
+    }
+        /**
+     * @param {Casilla} currentSquare;
+     */
     set currentSquare(currentSquare){
         this._currentSquare = currentSquare;
     }
@@ -56,16 +61,35 @@ class Tab{
 
 class TabController{
 
-    generateTabs(player, recorrido){
+        /**
+     * @param {Player} p;
+     * @param {Recorrido} r;
+     */
+    generatePlayerTabs(p, r){
         let tab;
         let recorridoController = new RecorridoController();
         let arr = []
-        for(let i = 0; i< player.tabsQuantity; i++){
-            tab = new Tab(player.color, i);
-            tab.currentSquare = recorridoController.getHouse(recorrido, tab.tabColor);
+        for(let i = 0; i< p.tabsQuantity; i++){
+            tab = new Tab(p.color);
+            tab.currentSquare = recorridoController.getHouse(r, tab.color);
+            tab.id = tab.color+ 'Tab' + i;
             arr.push(tab);
         }
-        player.tabsArray = arr;
+        p.tabsArray = arr;
+        return arr;
+    }
+
+    /**
+     * @param {Player[]} pA;
+     * @param {Recorrido} r;
+     */
+    generateAllTabs(pA, r){
+        let arr = [];
+        let playerTabs;
+        for(let i = 0; i < pA.length ;i++){
+            playerTabs = this.generatePlayerTabs(pA[i], r);
+            arr.push(playerTabs);
+        }
         return arr;
     }
 }
@@ -76,103 +100,65 @@ class Player{
     _tabsQuantity;
 
     constructor(color, tabsQuantity){
-        this._color =color;
+        this._color = color;
         this,this._tabsQuantity = tabsQuantity;
     }
-    get tabs(){
+    get tabsArray(){
         return this._tabsArray;
     }
-    set tabs(tabs){
-        this._tabs = tabs;
+    /**
+     * @param {Tab[]} tabs;
+     */
+    set tabsArray(tabs){
+        this._tabsArray = tabs;
     }
     get tabsQuantity(){
         return this._tabsQuantity;
     }
+    /**
+     * @param {Int} tabsQuantity;
+     */
     set tabsQuantity(tabsQuantity){
         this._tabsQuantity = tabsQuantity;
     }
     get color(){
         return this._color;
     }
+    /**
+     * @param {string} color;
+     */
     set color(color){
         this._color = color;
     }
-}
-//Clase tablero
-class BoardPOO{
-    _colors = ['blue', 'yellow', 'red', 'green','orange','pink'];
-    _boardSize;
-    _nTabs;
-    _recorrido;
-    _tabsArray;
-    _housesArray;
-
-    constructor(boardSize,nTabs){
-        this._boardSize = boardSize;
-        this._nTabs = nTabs;
-        this._recorrido = this.generateRecorrido(boardSize);
-        this._tabsArray = this.generateTabs(nTabs, boardSize);
+    get name(){
+        return this._name;
     }
-
-    generateRecorrido(boardSize){
-        let recorrido = new Recorrido();
-        for( let i = 0; i < boardSize; i++){
-            recorrido.agregarCasilla(new SeguroUno(this._colors[i]));
-            recorrido.agregarCasilla(new Salida(this._colors[i]));
-            recorrido.agregarCasilla(new SeguroDos(this._colors[i]));
-            }
-        this.addHouses(recorrido);
-        return recorrido
-    }
-
-    addHouses(recorrido){
-        let housesArray = [];
-        let houseSquare;
-        q = recorrido.primero.siguienteCasilla;
-        while(!band){
-            if (q.type === 'Salida'){
-                houseSquare = new Casilla(q.color, 'House');
-                houseSquare._siguienteCasilla = q;
-                housesArray.push(houseSquare);
-            } else{
-                q = q.siguienteCasilla.siguienteCasilla;
-            }
-        }
-
-    }
-
-    getHouse(color){
-        let houseArray = this._housesArray;
-        houseArray.forEach(house =>{
-            if (house.color === 'color'){
-                return house
-            }
-        })
-    }
-
-    generateTabs(nTabs, boardSize){
-        let tabsArray = [];
-        for(var i = 0; i<boardSize;i++){
-            let tabsColorArray = [];
-            for(var j = 0;j < nTabs;j++){
-                let tab = new Tab(this._colors[i], j);
-                tabsColorArray.push(tab);
-            }
-            tabsArray.push(tabsColorArray);
-        }
-        return tabsArray;
-    }
-
-    get recorrido(){
-        return this._recorrido;
-    }
-
-    get tabsArray(){
-        return this._tabsArray;
+    /**
+     * @param {string} name;
+     */
+    set name(name){
+        this._name = name;
     }
 }
 
-//Clases para las casillas ---------------------------------------------------------------------
+class PlayerController{
+
+    /**
+     * @param {Int} nPlayers;
+     * @param {Int} nTabs;
+     */
+    generatePlayers(nPlayers, nTabs){
+        let player;
+        
+        let playersArray = []
+        for(let i = 0; i<= nPlayers-1; i++){
+            player = new Player(GameController.colorsArray()[i], nTabs);
+            playersArray.push(player);
+        }
+        return playersArray;
+    }
+}
+
 class Casilla{
     _color;
     _type;
@@ -189,36 +175,51 @@ class Casilla{
     get color(){
         return this._color;
     }
+        /**
+     * @param {string} color;
+     */
     set color(color){
         this._color = color;
     }
     get type(){
         return this._type;
     }
-
-    get id(){
-        return this._id;
-    }
-
-    get fichasDentro(){
-        return this._fichasDentro;
-    }
-
-    get siguienteCasilla(){
-        return this._siguienteCasilla
-    }
-
+    /**
+     * @param {string} type;
+     */
     set type(type){
         this._type = type;
     }
-
+    get id(){
+        return this._id;
+    }
+    /**
+     * @param {string} id;
+     */
+    set id(id){
+        this._id = id;
+    }
+    get fichasDentro(){
+        return this._fichasDentro;
+    }
+    /**
+     * @param {Tab[]} fichasDentro;
+     */
+    set fichasDentro(fichasDentro){
+        this._fichasDentro = fichasDentro;
+    }
+    get siguienteCasilla(){
+        return this._siguienteCasilla
+    }
+    /**
+     * @param {Casilla} siguienteCasilla;
+     */
     set siguienteCasilla(siguienteCasilla){
         this._siguienteCasilla = siguienteCasilla;
     }
 }
 
 class SeguroUno extends Casilla{
-
     constructor(color){
         super(color, 'SeguroUno');
     }
@@ -237,9 +238,7 @@ class SeguroUno extends Casilla{
 }
 
 class SeguroDos extends Casilla{
-    _type = 'seguroDos'
-
-    constructor(color){
+        constructor(color){
         super(color, 'SeguroDos');
     }
 
@@ -319,6 +318,9 @@ class Recorrido{
     constructor(){
     }
 
+    /**
+     * @param {Casilla} casilla;
+     */
     agregarCasilla(casilla){
         if(this.esVacia()){
             this.primero = casilla;
@@ -334,12 +336,21 @@ class Recorrido{
     esVacia(){
         return this._primero === null;
     }
+    /**
+     * @param {Casilla} casilla;
+     */
     finDeRecorrido(casilla){
         return casilla === this.primero;
     }
+    /**
+     * @param {Casilla} primero;
+     */
     set primero(primero){
         this._primero = primero
     }
+    /**
+     * @param {Casilla} ultimo;
+     */
     set ultimo(ultimo){
         this._ultimo = ultimo;
     }
@@ -352,29 +363,40 @@ class Recorrido{
     get houseArray(){
         return this._houseArray;
     }
+    /**
+     * @param {Casilla[]} houseArray;
+     */
     set houseArray(houseArray){
         this._houseArray = houseArray;
     }
 }
 
 class RecorridoController{
-    _colors = ['blue', 'yellow', 'red', 'green','orange','pink'];
 
+    /**
+     * 
+     * @param {Int} boardSize 
+     * @returns Recorrido
+     */
     generateRecorrido(boardSize){
         let recorrido = new Recorrido();
         for( let i = 0; i < boardSize; i++){
-            recorrido.agregarCasilla(new SeguroUno(this._colors[i]));
-            recorrido.agregarCasilla(new Salida(this._colors[i]));
-            recorrido.agregarCasilla(new SeguroDos(this._colors[i]));
+            recorrido.agregarCasilla(new SeguroUno(GameController.colorsArray[i]));
+            recorrido.agregarCasilla(new Salida(GameController.colorsArray[i]));
+            recorrido.agregarCasilla(new SeguroDos(GameController.colorsArray[i]));
             }
         this.addHouses(recorrido);
         return recorrido
     }
 
+    /**
+     * 
+     * @param {Recorrido} recorrido 
+     */
     addHouses(recorrido){
         let housesArray = [];
         let houseSquare;
-        let q = recorrido.primero;
+        let q = recorrido.primero.siguienteCasilla;
         while(!recorrido.finDeRecorrido(q)){
             let qType = q.type;
             if (qType === 'Salida'){
@@ -391,11 +413,8 @@ class RecorridoController{
 
     getHouse(recorrido,color){
         let houseArray = recorrido.houseArray;
-        console.log(houseArray)
-        let comparedColor;
         for(let i = 0; i<= houseArray.length-1; i++){
-            comparedColor = houseArray[i].color;
-            if (comparedColor === color){
+            if (houseArray[i].color === color){
                 return houseArray[i];
             }
         }
@@ -501,16 +520,34 @@ class Game{
         */
     }
 }
+class GameController{
+    
+
+    constructor(){}
+    /**
+     * 
+     * @returns 
+     */
+    static colorsArray(){
+        return ['blue', 'yellow', 'red', 'green','orange','pink'];
+    }
+}
 
 var size = 4;
 const recorridoControler = new RecorridoController();
 const tabController = new TabController();
-const player = new Player('Blue', 4);
+const playerController = new PlayerController();
 var recorrido = recorridoControler.generateRecorrido(size);
-console.log(recorridoControler.getHouse('blue'));
+var players = playerController.generatePlayers(4,4);
+var allTabs = tabController.generateAllTabs(players,recorrido);
 
-console.log(tabController.generateTabs(player,recorrido))
+console.log(allTabs);
 
+/* 
+var arrayTabs = tabController.generateTabs(player, recorrido); 
+console.log(arrayTabs);
+console.log(recorridoControler.getHouse(recorrido,'blue'));
+*/
 
 
 
