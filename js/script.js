@@ -17,6 +17,81 @@ class ui_tab{
         return tabHtml;
     }
 }
+
+function tabSelected(tab){
+    if(tab.getAttribute('hold') === 'true'){
+        deselect(tab);
+    }else{
+        deselec
+        
+function deselect(tab){
+    tab.classList.toggle('blue-tab-hold');
+    tab.setAttribute('hold', 'false');
+}
+
+function deselectAll(className){
+    let elements = document.getElementsByClassName(className);
+    for(var j = 0; j<elements.length; j++){
+        if(elements[j].getAttribute('hold')  === 'true'){
+            deselect(elements[j]);
+        }
+    }
+}
+
+class LSLCNC{
+    _first;
+    _last;
+
+    isVoid(){
+        return this.priero === null;
+    }
+    endRoute(node){
+        return node.nextNode === this.first;
+    }
+    addNode(node){
+        if(this.isVoid()){
+            this.first = node;
+            this.last = node;
+            node.nextNode = node;
+        }else{
+            this.last.next = node;
+            node.nextNode = this.first;
+            this.last = node;
+        } 
+    }
+
+    get first(){
+        return this._first;
+    }
+    set first(first){
+        this._first ) first;
+    }
+    get last(){
+        return this._last;
+    }
+    set last(last){
+        this._last = last;
+    }
+}
+
+class Node{
+    _nextNode;
+    _value
+
+    get nextNode(){
+        return this._nextNode;
+    }
+    set nextNode(nextNode){
+        this._nextNode ) nextNode;
+    }
+    get value(){
+        return this._value;
+    }
+    set value(value){
+        this._value = value;
+    }
+}
+
 */
 
 
@@ -58,16 +133,15 @@ class Tab{
         this._currentSquare = currentSquare;
     }
 }
-
 class TabController{
 
         /**
      * @param {Player} p;
-     * @param {Recorrido} r;
+     * @param {Route} r;
      */
     generatePlayerTabs(p, r){
         let tab;
-        let recorridoController = new RecorridoController();
+        let recorridoController = new RouteController();
         let arr = []
         for(let i = 0; i< p.tabsQuantity; i++){
             tab = new Tab(p.color);
@@ -81,7 +155,7 @@ class TabController{
 
     /**
      * @param {Player[]} pA;
-     * @param {Recorrido} r;
+     * @param {Route} r;
      */
     generateAllTabs(pA, r){
         let arr = [];
@@ -103,17 +177,92 @@ class TabController{
         let index = parseInt(id[id.length-1]);
         for (let i = 0; i < playersArray.length ; i++){
             player = playersArray[i];
-            player.tabsArray[index]  if (player.tabsArray[index].id === id){
+            if (player.tabsArray[index].id === id){
                 return player.tabsArray[index];
             }  
         }
     }
+
+    static getTabMovements(tab,diceValues){
+        let n1 = diceValues[0];
+        let n2 = diceValues[1];
+        let currentSquareType = tab.currentSquare.type;
+        let possibleSquare;
+        switch (currentSquareType){
+            case 'SeguroUno':
+                if((n1+n2 === 5) || (n1 === 5) || (n2 === 5)){
+                    possibleSquare =  tab.currentSquare.siguienteCasilla;
+                } else if (n1+n2 === 12){
+                    possibleSquare = tab.currentSquare.siguienteCasilla.siguienteCasilla;
+                }
+            case 'Salida':
+                if(n1+n2 === 7){
+                    possibleSquare = tab.currentSquare.siguienteCasilla;
+                } else if(n1+n2 === 12){
+                    possibleSquare = tab.currentSquare,siguienteCasilla.siguienteCasilla;
+                }
+            case 'SeguroDos':
+            if((n1+n2 === 5) || (n1 === 5) || (n2 === 5)){
+                possibleSquare = tab.currentSquare.siguienteCasilla;
+            } else if(nT === 10){
+                possibleSquare = tab.currentSquare.siguienteCasilla.siguienteCasilla;
+            }
+            preSelectedSquare(possibleSquare); //this is a UI method
+            return possibleSquare
+        }
+    }
 }
+class TabUI{
+
+    uncklickAllTabs(turn){
+        let allTabs = turn.player.allTabs;
+        let tab;
+        let tabUI;
+        for(let i = 0; i< allTabs.length; i++){
+            tab = allTabs[i];
+            tabUI = document.getElementById(tab.id);
+            if(tabUI.getAttribute('pressed')==='false'){
+                deslectThisTab(tab);
+            } 
+        }
+    }
+    
+    static createTabsUI(game){
+        let container = document.getElementById('parent');
+        console.log(container);
+        let tabHtml;
+        let tab;
+        let allTabs = game.allTabs;
+        for(let i = 0; i<allTabs.length ; i++ ){
+            for(let j = 0; j<allTabs[0].length;j++){
+                tab = allTabs[i][j];
+                tabHtml = document.createElement('div');
+                tabHtml.classList.add('tab');
+                tabHtml.classList.add(tab.color);
+                tabHtml.setAttribute('id', tab.tabClass + tab.index);
+                tabHtml.setAttribute('pressed', 'false');
+                container.appendChild(tabHtml);
+            }
+        }
+    }
+
+    static tabClicked(tabUI,turn){
+        this.uncklickAllTabs(turn);
+        let tab = searchTabById(tabUI.getAttribute('id'))
+        tabUI.classList.toggle('tab-clicked');
+        tabUI.setAttribute('pressed', 'true');
+        let possibleSquare = TabController.getTabMovements(tab, turn.diceValues);
+        possibleSquareUI = document.getElementById(possibleSquare.id);
+        squareUI.showPossibleSquare(possibleSquareUI);
+    }
+}
+
 class Player{
     _tabsArray;
     _color;
     _name;
     _tabsQuantity;
+    _order;
 
     constructor(color, tabsQuantity){
         this._color = color;
@@ -155,8 +304,16 @@ class Player{
     set name(name){
         this._name = name;
     }
+    get order(){
+        return this._order;
+    }
+    /**
+     * @param {Int} order;
+     */
+    set order(order){
+        this._order = order;
+    }
 }
-
 class PlayerController{
 
     /**
@@ -166,9 +323,10 @@ class PlayerController{
     generatePlayers(nPlayers, nTabs){
         let player;
         
-        let playersArray = []
+        let playersArray = [];
         for(let i = 0; i<= nPlayers-1; i++){
             player = new Player(GameController.colorsArray()[i], nTabs);
+            player.order = i;
             playersArray.push(player);
         }
         return playersArray;
@@ -234,7 +392,6 @@ class Casilla{
         this._siguienteCasilla = siguienteCasilla;
     }
 }
-
 class SeguroUno extends Casilla{
     constructor(color){
         super(color, 'SeguroUno');
@@ -252,7 +409,6 @@ class SeguroUno extends Casilla{
         }
     }
 }
-
 class SeguroDos extends Casilla{
         constructor(color){
         super(color, 'SeguroDos');
@@ -270,7 +426,6 @@ class SeguroDos extends Casilla{
         }
     }
 }
-
 class Salida extends Casilla{
 
     constructor(color){
@@ -289,44 +444,7 @@ class Salida extends Casilla{
     }
 }
 
-class GameControl{
-
-    allMovTabs(n,player){
-        let totalTabs = player.tabs;
-        let movableTabs = [];
-        totalTabs.forEach( tab => {
-            if(this.isMovable(tab,n)){
-                movableTabs.push(tab);
-            }
-        });
-        return movableTabs
-    }
-
-    isMovable(tab,n){
-        let currentSquare = tab.currentSquare;
-        switch(tab.currentSquare.type){
-            case 'seguroUno':
-                if(n === 5 || n == 12){
-                    return true;
-                }
-                break;
-            case 'salida':
-                if(n === 7 || n == 12){
-                    return true;
-                }
-                break;
-            case 'seguroDos':
-                if(n === 5 || n == 10){
-                    return true;
-                }
-                break;
-            default:
-                return false;
-        }
-    }
-}
-
-class Recorrido{
+class Route{
     _primero = null;
     _ultimo = null;
     _houseArray;
@@ -337,8 +455,8 @@ class Recorrido{
     /**
      * @param {Casilla} casilla;
      */
-    agregarCasilla(casilla){
-        if(this.esVacia()){
+    addSquare(casilla){
+        if(this.isVoid()){
             this.primero = casilla;
             this.ultimo = casilla;
             casilla.siguienteCasilla = casilla;
@@ -349,14 +467,14 @@ class Recorrido{
         }
     }
 
-    esVacia(){
+    isVoid(){
         return this._primero === null;
     }
     /**
      * @param {Casilla} casilla;
      */
-    finDeRecorrido(casilla){
-        return casilla === this.primero;
+    endRoute(casilla){
+        return casilla.siguienteCasilla === this.primero;
     }
     /**
      * @param {Casilla} primero;
@@ -386,20 +504,19 @@ class Recorrido{
         this._houseArray = houseArray;
     }
 }
-
-class RecorridoController{
+class RouteController{
 
     /**
      * 
      * @param {Int} boardSize 
-     * @returns Recorrido
+     * @returns Route
      */
-    generateRecorrido(boardSize){
-        let recorrido = new Recorrido();
+    generateRoute(boardSize){
+        let recorrido = new Route();
         for( let i = 0; i < boardSize; i++){
-            recorrido.agregarCasilla(new SeguroUno(GameController.colorsArray()[i]));
-            recorrido.agregarCasilla(new Salida(GameController.colorsArray()[i]));
-            recorrido.agregarCasilla(new SeguroDos(GameController.colorsArray()[i]));
+            recorrido.addSquare(new SeguroUno(GameController.colorsArray()[i]));
+            recorrido.addSquare(new Salida(GameController.colorsArray()[i]));
+            recorrido.addSquare(new SeguroDos(GameController.colorsArray()[i]));
             }
         this.addHouses(recorrido);
         return recorrido
@@ -407,13 +524,13 @@ class RecorridoController{
 
     /**
      * 
-     * @param {Recorrido} recorrido 
+     * @param {Route} recorrido 
      */
     addHouses(recorrido){
         let housesArray = [];
         let houseSquare;
-        let q = recorrido.primero.siguienteCasilla;
-        while(!recorrido.finDeRecorrido(q)){
+        let q = recorrido.primero;
+        while(!recorrido.endRoute(q)){
             let qType = q.type;
             if (qType === 'Salida'){
                 houseSquare = new Casilla(q.color, 'House');
@@ -440,13 +557,16 @@ class RecorridoController{
 class Turn{
     _player;
     _nextTurn = null;
-    _par = 1;
+    _diceValues;
     
-    set par(par){
-        this._par = par;
+    constructor(player){
+        this._player = player;
     }
-    get par(){
-        return this._par;
+    set nextTurn(nextTurn){
+        this._nextTurn = nextTurn;
+    }
+    get nextTurn(){
+        return this._nextTurn;
     }
     set player(player){
         this._player = player;
@@ -454,12 +574,58 @@ class Turn{
     get player(){
         return this._player;
     }
+    set diceValues(diceValues){
+        this._diceValues = diceValues;
+    }
+    get diceValues(){
+        return this._diceValues;
+    }
+}
+class TurnController{
+    
+    startTurn(turn){
+        /*
+        - Alumbra el jugador (demora un opoquito incluso);
+        */
+       GameActionsUI.activateBtnDice();
+       /*
+        - Agrega evento a las tabs que se decidan
+        - Al clickear las tabs se llama a getTabMovement
+        - 
+        */
+        
+        while(!endTurn()){
+
+        }
+
+
+
+    }
+
 }
 
 class Round{
     _turns;
-    _firstTurn;
-    _lastTurn;
+    _firstTurn = null;
+    _lastTurn = null;
+
+    addTurn(turn){
+        if(this.isVoid()){
+            this.firstTurn = turn;
+            this.lastTurn = turn;
+            turn.nextTurn = turn;
+        }else{
+            this.lastTurn.nextTurn = turn;
+            turn.nextTurn = this.firstTurn;
+            this.lastTurn = turn;
+        } 
+    }
+    isVoid(){
+        return this.firstTurn === null;
+    }
+    endRoute(turn){
+        return turn.nextTurn === this.primero;
+    }
 
     get firstTurn(){
         return this._firstTurn
@@ -480,90 +646,73 @@ class Round{
         this._turns = turns;
     }
 }
+class RoundController{
 
-class TurnController{
-    _par;
-
-    gameController = new GameControl();
-
-    throwDados(){
-        let arr = [];
-        //Sacar los números random
-        let a = 1;
-        let b = 2;
-
-        arr.push(a);
-        arr.push(b);
-        return arr;
-    }
-
-    searchTabById(id, player){
-        let index = id[id.length-1]
-        return player.tabs[parseInt(index)]
-    }
-
-    isPar(n){
-        return n[0] === n[1];
-    }
-
-    threePar(turn){
-        return turn.par === 3;
-    }
-
-    tabWon(tab){
-        tab.state = 'win';
-    }
-
-    makeTurn(turn){
-        let values = this.throwDados();
-        if(this.isPar(values)){
-            turn.par = turn.par + 1;
-            if (this.threePar(turn)){
-                //Se le activa un eventListener a las tabs que no esten en estado = "win" y que estén en el arreglo del player (Método UI)
-                //Un método de UI que permita obtener el id de una ficha clickeada
-                let id = 'blueTab0'
-                let tab = this.searchTabById(id,player);
-                this.tabWon(tab);
-                turn.nextTurn();
-            } 
-            this.makeTurn(turn);
-        } else{
-            allMovTabs(values[0]+values[1],turn.player);
-            //Agregar eventos a las casillas de HTML o retornar allMovaTabs para hacer el proceso en las clases UI
-            //También se puede insertar el Método UI directamente acá, haciendo que las clases de Lógica de Negocio sean como **LAS CLASES CREADORAS** 
+    generateRound(players){
+        let round = new Round();
+        let turn;
+        let turnsArr = []
+        for(let i = 0; i< players.length; i++){
+            turn = new Turn(players[i]);
+            turnsArr.push(turn);
+            round.addTurn(turn);
         }
+        round._turns = turnsArr;
+        return round;
     }
 
-    //Turnos especiales:
+    chooseTurnOrder(round){
+        turn = round.firstTurn
+        startTurn(turn);
+        let total  =numbers[0] + numbers[1];
 
-
+        //Debe hacer un turno
+    }
 }
 
 class Game{
     _players;
     _route;
+    _round;
+    _allTabs;
 
-    constructor(players, route){
+    constructor(players, route,round, allTabs){
         this._players = players;
         this._route = route;
+        this._round = round;
+        this._allTabs = allTabs;
     }
     get players(){
         return this._players;
     }
     set players(players){
-        this._players = this.players;
+        this._players = players;
     }
     get route(){
         return this._route;
     }
     set route(route){
-        this._route = this.route;
+        this._route = route;
+    }
+    get round(){
+        return this._round;
+    }
+    set round(round){
+        this._round = round;
+    }
+    get allTabs(){
+        return this._allTabs;
+    }
+    set allTabs(allTabs){
+        this._allTabs = allTabs;
     }
 }
 class GameController{
-    _routController = new RecorridoController();
+    _routController = new RouteController();
     _tabController = new TabController();
     _playerController = new PlayerController();
+    _roundController = new RoundController();
+    _turnController = new TurnController();
 
     constructor(){}
     /**
@@ -579,13 +728,19 @@ class GameController{
      * @param {Int} tN 
      * @param {Int} bS 
      */
-    startGame(pN, tN, bS){
-        let route = this.routController.generateRecorrido(bS);
+    initalizeGame(pN, tN, bS){
+        let route = this.routController.generateRoute(bS);
         let players = this.playerController.generatePlayers(pN,tN);
         let allTabs = this.tabController.generateAllTabs(players, route);
-        let game = new Game(players,route)
+        let round = this.roundController.generateRound(players);
+        let game = new Game(players,route, round, allTabs);
         return game;
         //Métodos UI
+    }
+
+    starGame(game){
+        let turn = game.round.primero;
+        this.roundController.chooseTurnOrder();
     }
 
     get routController(){
@@ -608,68 +763,71 @@ class GameController{
     set playerController(playerController){
         this._playerController = playerController;
     }
-}
-let tabController = new TabController();
-let gameController = new GameController();
-let game = gameController.startGame(4,4,4);
-console.log(tabController.searchTabById('blueTab0', game));
-/* 
-var arrayTabs = tabController.generateTabs(player, recorrido); 
-console.log(arrayTabs);
-console.log(recorridoControler.getHouse(recorrido,'blue'));
-*/
-
-
-
-
-
-
-
-/*
-function tabSelected(tab){
-    if(tab.getAttribute('hold') === 'true'){
-        deselect(tab);
-    }else{
-        deselecswitch (currentSquareType){
-                case 'SeguroUno':
-                    if((nT === 5) || (n1 === 5) || (n2 === 5)){
-                        return tab.currentSquare.siguienteCasilla
-                    } else if (nT === 12){
-                        return tab.currentSquare.siguienteCasilla.siguienteCasilla
-                    }
-                case 'Salida':
-                    if(n1+n2 === 7){
-                        return tab.currentSquare.siguienteCasilla;
-                    } else if(n1+n2 === 12){
-                        return tab.currentSquare,siguienteCasilla.siguienteCasilla;
-                    }
-                case 'SeguroDos':
-                if((nT === 5) || (n1 === 5) || (n2 === 5)){
-                    return tab.currentSquare.siguienteCasilla;
-                } else if(nT === 10){
-                    return tab.currentSquare.siguienteCasilla.siguienteCasilla;
-                }
-            }
-function deselect(tab){
-    tab.classList.toggle('blue-tab-hold');
-    tab.setAttribute('hold', 'false');
+    get roundController(){
+        return this._roundController;
+    }
+    set roundController(roundController){
+        this._roundController = roundController;
+    }
 }
 
-function deselectAll(className){
-    let elements = document.getElementsByClassName(className);
-    for(var j = 0; j<elements.length; j++){
-        if(elements[j].getAttribute('hold')  === 'true'){
-            deselect(elements[j]);
+class GameActions{
+
+    static throwDados(turn){
+        let n1 = Math.floor(Math.random() * (7 - 1)) + 1;
+        let n2 = Math.floor(Math.random() * (7 - 1)) + 1;
+        turn.diceValues = [n1,n2];
+    }
+
+    static makeTurn(turn){
+        let numbers = this.throwDados()
+        /*
+        - Add event listener to the tabs of the player of turn.player.tabsArray
+        - When clicked a tab, star the selectedTab() function, it shows the possible
+        movements with getPossibleMovements()
+        - getPossibleMovements must activate the eventListener in the square
+        */
+        moveTab(tab)
+    }
+
+    static selectTab(tab){
+        this.getPossibleMovements(tab)
+
+    }
+
+    static makeFirstTurn(turn){
+        let numbers = this.throwDados();
+        let total = numbers[0] + numbers[1];
+    }
+}
+
+class GameActionsUI{
+    static _btnDices = document.getElementById('btnDices');
+
+    static activateBtnDice(turn){
+        this._btnDices.addEventListener('click', GameActions.throwDados(turn));
+    }
+
+    static desactivateBtnDice(turn){
+        this._btnDices.removeEventListener('click', GameActions.throwDados(turn));
+    }
+
+    static activateTabs(turn){
+        let tabs = turn.player.tabsArray;
+        let tabUI;
+        let tab;
+        for(i = 0; i<tabs.length;i++){
+            tab = tabs[i];
+            tabUI = document.getElementById(tab.id);
+            tabUI.addEventListener('click', (e)=>{
+                let t = e.currentTarget;
+                TabUI.tabClicked(t,turn);
+            })
         }
     }
 }
-*/
 
+let gameCon = new GameController();
+let game = gameCon.initalizeGame(4,4,4);
+TabUI.createTabsUI(game);
 
-
-
-//Qué hay qué hacer
-
-//Empieza el juego
-
-//PENDIENTE: ASIGNAR TURNOS
