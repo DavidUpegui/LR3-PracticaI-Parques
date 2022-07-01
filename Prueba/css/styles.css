@@ -1,0 +1,120 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin:0;
+}
+
+.home{
+    height: 200px;
+    width: 200px;
+    background-color: aliceblue;
+    position: absolute;
+}
+
+.casillaVertical{
+    height: 118px;
+    width: 38px;
+    background-color: blueviolet;
+    position: absolute;
+}
+
+.casillaHorizontal{
+    height: 38px;
+    width: 118px;
+    background-color: aqua;
+    position: absolute;
+}
+
+#tablero {
+    height: 900px;
+    width: 900px;
+    background-image: url("tablero.png");
+    background-size: cover;
+}
+
+#blueHome{
+    margin-left: 30px;
+    margin-top: 30px;
+}
+
+#blueSeguroUno{
+    margin-left: 392px;
+}
+
+#blueSalida{
+    margin-left: 274px;
+    margin-top: 148px;
+}
+
+#blueSeguroDos{
+    margin-top: 274px;
+    margin-left: 148px;
+}
+
+#yellowHouse{
+    margin-left: 30px;
+    margin-top: 670px;
+}
+
+#yellowSalida{
+    margin-top: 510px;
+    margin-left: 148px;
+}
+
+#yellowSeguroUno{
+    margin-top: 392px;
+}
+
+#yellowSeguroDos{
+    margin-top: 714px;
+    margin-left: 274px;                                                             
+}
+
+#greenHouse{
+    margin-left: 670px;
+    margin-top: 30px;
+}
+
+#greenSalida{
+    margin-top: 274px;
+    margin-left: 714px;
+}
+
+#greenSeguroUno{
+    margin-top: 392px;
+    margin-left: 862px;
+}
+
+#greenSeguroDos{
+    margin-top: 148px;
+    margin-left: 510px;                                                           
+}
+
+#redHouse{
+    margin-left: 670px;
+    margin-top: 670px;
+}
+
+#redSalida{
+    margin-top: 714px;
+    margin-left: 510px;  
+}
+
+#redSeguroUno{
+    margin-top: 862px;
+    margin-left: 392px;
+}
+
+#redSeguroDos{
+    margin-top: 510px;
+    margin-left: 714px;                                                           
+}
