@@ -41,80 +41,80 @@ html, body {
     background-size: cover;
 }
 
-#homeBlue{
+#blueHome{
     margin-left: 30px;
     margin-top: 30px;
 }
 
-#seguro1Blue{
+#blueSeguroUno{
     margin-left: 392px;
 }
 
-#salidaBlue{
+#blueSalida{
     margin-left: 274px;
     margin-top: 148px;
 }
 
-#seguro2Blue{
+#blueSeguroDos{
     margin-top: 274px;
     margin-left: 148px;
 }
 
-#homeYellow{
+#yellowHouse{
     margin-left: 30px;
     margin-top: 670px;
 }
 
-#salidaYellow{
+#yellowSalida{
     margin-top: 510px;
     margin-left: 148px;
 }
 
-#seguro1Yellow{
+#yellowSeguroUno{
     margin-top: 392px;
 }
 
-#seguro2Yellow{
+#yellowSeguroDos{
     margin-top: 714px;
     margin-left: 274px;                                                             
 }
 
-#homeGreen{
+#greenHouse{
     margin-left: 670px;
     margin-top: 30px;
 }
 
-#salidaGreen{
+#greenSalida{
     margin-top: 274px;
     margin-left: 714px;
 }
 
-#seguro1Green{
+#greenSeguroUno{
     margin-top: 392px;
     margin-left: 862px;
 }
 
-#seguro2Green{
+#greenSeguroDos{
     margin-top: 148px;
     margin-left: 510px;                                                           
 }
 
-#homeRed{
+#redHouse{
     margin-left: 670px;
     margin-top: 670px;
 }
 
-#salidaRed{
+#redSalida{
     margin-top: 714px;
     margin-left: 510px;  
 }
 
-#seguro1Red{
+#redSeguroUno{
     margin-top: 862px;
     margin-left: 392px;
 }
 
-#seguro2Red{
+#redSeguroDos{
     margin-top: 510px;
     margin-left: 714px;                                                           
 }
