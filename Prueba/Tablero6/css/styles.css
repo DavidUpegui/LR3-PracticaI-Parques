@@ -13,9 +13,99 @@ html, body {
     margin:0;
 }
 
+.home{
+    height: 100px;
+    width: 100px;
+    background-color: aliceblue;
+    position: absolute;
+}
+
+.casillaHorizontal{
+    height: 40px;
+    width: 80px;
+    background-color: aqua;
+    position: absolute;
+}
+
+.casillaDiagonalUno{
+    height: 40px;
+    width: 80px;
+    background-color: palevioletred;
+    position: absolute;
+    transform: rotate(60deg);
+}
+
+.casillaDiagonalDos{
+    height: 40px;
+    width: 80px;
+    background-color: blue;
+    position: absolute;
+    transform: rotate(-60deg);
+}
+
 #tablero {
     height: 900px;
     width: 900px;
-    background-image: url("tablero.jpg");
+    background-image: url("tablero.png");
     background-size: cover;
+}
+
+#pinkHouse{
+    margin-left: 220px;
+    margin-top: 80px;
+}
+
+#pinkSalida{
+    margin-left: 330px;
+    margin-top: 155px;
+}
+
+#pinkSeguroUno{
+    margin-left: 410px;
+    margin-top: 15px;
+}
+
+#pinkSeguroDos{
+    margin-left: 215px;
+    margin-top: 225px;
+}
+
+#orangeHouse{
+    margin-left: 575px;
+    margin-top: 80px;
+}
+
+#orangeSalida{
+    margin-left: 605px;
+    margin-top: 225px;
+}
+
+#orangeSeguroUno{
+    margin-left: 770px;
+    margin-top: 220px;
+}
+
+#orangeSeguroDos{
+    margin-left: 490px;
+    margin-top: 155px;
+}
+
+#blueHouse{
+    margin-left: 780px;
+    margin-top: 400px;
+}
+
+#blueSalida{
+    margin-left: 690px;
+    margin-top: 500px;
+}
+
+#blueSeguroUno{
+    margin-left: 770px;
+    margin-top: 640px;
+}
+
+#blueSeguroDos{
+    margin-left: 690px;
+    margin-top: 360px;
 }
