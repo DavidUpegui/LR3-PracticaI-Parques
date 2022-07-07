@@ -190,10 +190,12 @@ class TabController{
         }
     }
 
-    freeTab(tab){
-        Game._currentTurn.player.inHouse = false;
-        let salida = tab.currentSquare;
-        TabController.moveTab(tab, salida);
+    freeTabs(turn){
+        let tabsArray = turn.player.tabsArray;
+        for(let i = 0; i< tabsArray.length; i++){
+            this.moveTab(tabsArray[i], tabsArray[i].currentSquare.siguienteCasilla);
+        }
+        turn.player.inHouse = false;
     }
 
     moveTab(tab, square){
@@ -202,6 +204,7 @@ class TabController{
         let squareUI = document.getElementById(square.id);
         TabUI.moveTabUI(tabUI,squareUI);
         GameActionsUI.desactivateSquareUI(tab,squareUI);
+        endTurn() //TODO GEstionar el end Turn
     }
 
     static getTabMovements(tab,turn){
@@ -610,6 +613,8 @@ class Turn{
     _player;
     _nextTurn = null;
     _diceValues;
+    _timesThrowed = 0;
+    _isOrdered = false;
     
     constructor(player){
         this._player = player;
@@ -638,6 +643,18 @@ class Turn{
     get diceValues(){
         return this._diceValues;
     }
+    set timesThrowed(timesThrowed){
+        this._timesThrowed = timesThrowed;
+    }
+    get timesThrowed(){
+        return this._timesThrowed;
+    }
+    set isOrdered(isOrdered){
+        this._isOrdered = isOrdered;
+    }
+    get isOrdered(){
+        return this._isOrdered;
+    }
 }
 class TurnController{
     
@@ -657,7 +674,6 @@ class TurnController{
         }else{
             GameActionsUI.activateBtnDice(turn);
             GameActionsUI.activateTabsUI(turn); // *Podría gestionar el activateTabsUI para que se ejecute después de tirar los dados, es decir, en el      método throwDices()
-
         }
     }
 
@@ -666,7 +682,14 @@ class TurnController{
         GameActionsUI.desactivateTabsUI(turn);
         turn = turn.nextTurn;
         this.startTurn(turn);
+    }
 
+    static getOutHouseTurn(){
+        let turn = Game._currentTurn;
+        let tabArray = [];
+        if (turn.isPar()){
+            TurnController.freeTab(tabArray[j]);
+        }
     }
 
 }
@@ -739,6 +762,7 @@ class UtilFunctions{
 class Game{
     static _game;
     static _currentTurn;
+    static _allTurns;
     _players;
     _route;
     _round;
@@ -803,18 +827,26 @@ class GameController{
         let round = this.roundController.generateRound(players);
         let game = new Game(players,route, round, allTabs);
         game._game = game;
+        game._currentTurn = round.firstTurn;
+        GameController.updateTurnArray();
         return game;
         //Métodos UI
     }
 
-    starGame(game){
-        GameActions.chooseOrder(game); //ronda para elegir el orden.
-        let turn = game.round.firstTurn;
+    static startGame(game){
+        GameActions.chooseOrder(); //ronda para elegir el orden.
         while(!game.isFinished){  //Mientras el juego no esté terminado
-            TurnController.startTurn(turn);
-            TurnController.endTurn(turn);
-            //TODO Actualizar condición de victoria.
+            startActions() //!
+            Game._currentTurn = Game._currentTurn.nextTurn;
         }
+    }
+
+    static updateTurnArray(){
+        let turn = Game._game.firstTurn;
+        do{
+            Game._allTurns.push(turn);
+            turn = turn.nextTurn
+        }while(Game._game.round.endRound(turn));
     }
 
     get routController(){
@@ -847,15 +879,43 @@ class GameController{
 
 class GameActions{
 
+    static startActions(){
+        startTurnUI() //*Se encarga de alumbrar al pj del turno;
+        if(Game._currentTurn.player.inHouse){
+            GameActions.throwDados();
+            GameActions.forGettingOutHouse();
+        }
+    }
+
     static throwDados(){
         let n1 = Math.floor(Math.random() * (7 - 1)) + 1;
         let n2 = Math.floor(Math.random() * (7 - 1)) + 1;
-        Game.currentTurn.diceValues = [n1,n2];
-        GameActionsUI.activateTabsUI;
-        GameActionsUI.desactivateBtnDice();
+        Game._currentTurn.diceValues = [n1,n2];
     }
 
-    static sortTurns(turnsArray){
+    static chooseOrder(){
+        GameActions.throwForOrdering();
+        let round = new Round()
+        Game._allTurns = GameActions.sortTurnsArray(Game._allTurns);
+        for(i = Game._allTurns.length; i>=0; i++){    //TODO Verificar que si esté recorriendo bien el arreglo.
+            round.addTurn(Game._allTurns[i]);
+        }
+        Game._game.round = round;
+        Game.game._currentTurn = Game.game.round.firstTurn;  //Todo Verficar que no haya incompatibilidades y que no se actualicen datos de manera rara
+    }
+
+    static throwForOrdering(){
+        document.getElementById('btnDices').removeEventListener('click', this.chooseOrder);   //TODO desactivateBtn para esa funcion
+        GameActions.throwDados();
+        Game._allTurns.push(Game._currentTurn);
+        Game._currentTurn = Game._currentTurn.nextTurn;
+        if(Game._game.round.endRound(Game._currentTurn)){
+            return    //TODO Verificar que el arreglo _allTurns sí esté con losn turnos y no con n+1 turnos, si está con n+1, remover el último.
+        }
+        document.getElementById('btnDices').addEventListener('click', this.chooseOrder);  //TODO activateBtn para esa funcion
+    }
+
+    static sortTurnsArray(turnsArray){
         if(turnsArray.length === 0){
             return [];
         }
@@ -877,35 +937,104 @@ class GameActions{
         right = this.sortTurns(right);
         return left.concat(pivot).concat(right);
     }
-    
-    static chooseOrder(game){
-        let unorderedRound = game.round;
-        let turn = unorderedRound.firstTurn;
-        let turnsArray = [];
-        do{
-            GameActionsUI.activateBtnDice(turn);
-            turnsArray.push(turn);
-            turn = turn.nextTurn;
-        }while(unorderedRound.endRound(turn) !== true);
-        let orderedArray = this.sortTurns(turnsArray);
-        let round = new Round();
-        for(let i =  orderedArray.length-1; i>=0;i--){
-            round.addTurn(orderedArray[i]);
+
+    static forGettingOutHouse(){
+        GameActionsUI.desactBtnDicesGettingOutHouse();
+        GameActions.throwDados();
+        Game._currentTurn.timesThrowed ++;
+        if(Game._currentTurn.isPar){
+            TabController.freeTabs(Game._currentTurn);
+        }
+        if(Game._currentTurn.timesThrowed === 3) return;
+        GameActionsUI.actBtnDiceGettingOutHouse();
+    }
+
+    // startTurn(){
+    //     throwDados;
+    //     if(turn.unordered || turn === round.lastTurn){
+    //         ordenarLaNuevaRonda()
+    //     }
+    //     if (player.inhouse){
+    //         if(player.tiradaspermitidas > 0){
+    //             verificarSalir();
+    //         }else{
+    //             tiradaspermitidas = 3;
+    //             pasarTurno();
+    //         }
+    //     }else{
+    //         //tiradas normales
+    //     }
+    // }
+
+    static startTurn(){
+        GameActions.throwDados();
+        let currentTurn = Game._currentTurn;
+        let game = Game._game;
+        if(currentTurn.isOrdered && currentTurn === game.round.lastTurn){
+            GameActions.orderRound(game);
+        }else{
+            playingTurn(currentTurn);
+
+        }
+    }
+
+    static orderRound(game){
+        let turnsArray = GameActions.sortTurnsArray(Game._allTurns);
+        let round = new Round()
+        for(let i = turnsArray.length; i>0; i--){
+            round.addTurn(turnsArray[i]);
         }
         game.round = round;
     }
 
+    playingRound(currentTurn){
+        if(currentTurn.player.inHouse){
+            GameActions.getOutHouseTurn(currentTurn);
+            
+        }else{
+        }
+    }
+
+    // verificarSalir(){
+    //     if (isPar()){
+    //         tiradasPermitidas == 0;
+    //         pasarTurno()
+    //     }else{
+    //         player.salidasPermitidas--;
+    //     }
+    // }
+
+    static getOutHouseTurn(){
+        if(Game._currentTurn.thrownsRemaining >0){
+            verifyParity();
+        }else{
+
+        }
+    }
+
+    static verifyParity(){
+        if()
+    }
 }
 
 class GameActionsUI{
     static _btnDices = document.getElementById('btnDices');
 
-    static activateBtnDice(){
-        this._btnDices.addEventListener('click', GameActions.throwDados());
+    static actBtnDiceChooseOrder(){
+        GameActionsUI._btnDices.addEventListener('click', GameActions.chooseOrder);
+        GameActionsUI._btnDices.classList.add(''); //TODO adicionar las clases
     }
-
-    static desactivateBtnDice(){
-        this._btnDices.removeEventListener('click', GameActions.throwDados());
+    static desactBtnDiceChooseOrder(){
+        GameActionsUI._btnDices.removeEventListener('click', GameActions.chooseOrder);
+        GameActionsUI._btnDices.classList.remove('');
+    }
+    static actBtnDiceGettingOutHouse(){
+        GameActionsUI._btnDices.addEventListener('click', GameActions.forGettingOutHouse);
+        GameActionsUI._btnDices.classList.add(''); //TODO adicionar las clases
+    }
+    static desactBtnDicesGettingOutHouse(){
+        GameActionsUI._btnDices.removeEventListener('click', GameActions.forGettingOutHouse);
+        GameActionsUI._btnDices.classList.remove('');
     }
 
     static activateTabsUI(turn){
@@ -971,3 +1100,54 @@ console.log('Terminó');
 Activo el evento de los dados.
 Espero a que se clickeen los dados para volver a tirar los dados
 */
+
+// Empieza el turno --> se añade el evento --> Se activa el evento --> se remueve el evento --> Se evalua si está en casa --> si esta en casa: turno casa, sino, turno normal.
+
+//Turno Casa --> Evalúa paridad --> Si no es par, Empieza
+
+
+startChoosing(){
+    addEventListener(throwForChoosing);
+}
+
+
+startGame(){
+    startChoosing();
+
+}
+
+
+addEventListener(startTurn)
+
+startTurn(){
+    throwDados;
+    if(turn.unordered || turn === round.lastTurn){
+        ordenarLaNuevaRonda()
+    }
+    if (player.inhouse){
+        if(player.tiradaspermitidas > 0){
+            verificarSalir();
+        }else{
+            tiradaspermitidas = 3;
+            pasarTurno();
+        }
+    }else{
+        //tiradas normales
+    }
+}
+
+ordenarLANuevaRonda(){
+    ordenar(turnArray);
+    recorrerTurnArrayYAgregarARonda();
+    actualizarRonda();
+    actalizarPrimerTurno();
+}
+
+verificarSalir(){
+    if (isPar()){
+        tiradasPermitidas == 0;
+        pasarTurno()
+    }else{
+        player.salidasPermitidas--;
+    }
+}
