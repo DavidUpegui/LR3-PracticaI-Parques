@@ -109,3 +109,63 @@ html, body {
     margin-left: 690px;
     margin-top: 360px;
 }
+
+#yellowHouse{
+    margin-left: 575px;
+    margin-top: 720px;
+}
+
+#yellowSalida{
+    margin-left: 490px;
+    margin-top: 705px;
+}
+
+#yellowSeguroUno{
+    margin-left: 410px;
+    margin-top: 845px;
+}
+
+#yellowSeguroDos{
+    margin-left: 610px;
+    margin-top: 635px;
+}
+
+#redHouse{
+    margin-left: 220px;
+    margin-top: 720px;
+}
+
+#redSalida{
+    margin-left: 215px;
+    margin-top: 635px;
+}
+
+#redSeguroUno{
+    margin-left: 50px;
+    margin-top: 640px;
+}
+
+#redSeguroDos{
+    margin-left: 330px;
+    margin-top: 705px;
+}
+
+#greenHouse{
+    margin-left: 20px;
+    margin-top: 400px;
+}
+
+#greenSalida{
+    margin-left: 130px;
+    margin-top: 360px;
+}
+
+#greenSeguroUno{
+    margin-left: 50px;
+    margin-top: 220px;
+}
+
+#greenSeguroDos{
+    margin-left: 130px;
+    margin-top: 500px;
+}
