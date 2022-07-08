@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Document</title>
+</head>
+<body>
+    <header id="head">
+        <img alt="Parques picapiedras" src="css/titulo.png" id="titulo">
+        <img alt="icono" src="css/parques.jfif" id="icono">
+    </header>
+    <div id="cont">
+        <form method="post">
+            <li>
+                <label for="tablero" class="label">Elija en que tablero desea jugar:</label><br><br><br>
+                <input name="tablero" type="radio" id="tablero4" value="4">Tablero de 4 puestos 
+                <br>  
+                <input name="tablero" type="radio" id="tablero6" value="6">Tablero de 6 puestos
+            </li>
+            <li>
+                <label for="jugadores" class="label">Elija un numero de jugadores:</label><br>
+                    <input type="range" name="jugadores" id="jugadores" min="2" max="6" step="1" value="3">
+                    <output class="jugadoresOutput" for="jugadores"></output>
+            </li>
+            <li>
+                <label for="fichas" class="label">Elija un numero de fichas:</label><br>
+                <input type="range" name="fichas" id="fichas" min="2" max="4" step="1" value="2">
+                    <output class="fichasOutput" for="fichas"></output>
+            </li>
+            <li>
+                <button name="button" id="button">Jugar</button>
+            </li>
+        </form>
+    </div>
+    <footer id="foot">
+        <p>
+            Primera practica para el curso de logica 3 del programa de ingenieria de sistemas de la universidad de antioquia
+        </p>
+        <p>
+            Desarrollada por David Upegui y Juan Manuel Vera
+        </p>
+    </footer>
+    <script src="javaScript/main.js"></script>
+</body>
+</html>
