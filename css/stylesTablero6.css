@@ -46,7 +46,7 @@ html, body {
 #tablero {
     height: 900px;
     width: 900px;
-    background-image: url("tablero.png");
+    background-image: url("./tablero6.png");
     background-size: cover;
 }
 
