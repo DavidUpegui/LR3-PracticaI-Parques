@@ -375,8 +375,10 @@ class Game{
     _round;
     _boardRoad;
     _isFinished;
+    _currentDiceValues;
+    static _colorsArray = ['blue', 'yellow', 'red', 'green','orange','pink'];
     static _currentTurn;
-    static _currentDiceValues;
+    
 
     constructor(boardSize, playerNumber,tabsNumber){
         this._boardRoad = GameControl.generateBoardRoad(boardSize);  
@@ -420,10 +422,15 @@ class Game{
     set isFinished(isFinished){
         this._isFinished = isFinished;
     }
+    get currentDiceValues(){
+        return this._currentDiceValues;
+    }
+    set currentDiceValues(currentDiceValues){
+        this._currentDiceValues = currentDiceValues;
+    }
 }
 
 class GameControl{
-    static _colorsArray = ['blue', 'yellow', 'red', 'green','orange','pink'];
     static _currentGame;
     static _tabSelected;
     static _squareSelected; 
@@ -431,9 +438,9 @@ class GameControl{
     static generateBoardRoad(boardSize){
         let boardRoad = new BoardRoad();
         for( let i = 0; i < boardSize; i++){
-            boardRoad.addElement(new SafeOne(GameControl._colorsArray[i]));
-            boardRoad.addElement(new Exit(GameControl._colorsArray[i]));
-            boardRoad.addElement(new SafeTwo(GameControl._colorsArray[i]));
+            boardRoad.addElement(new SafeOne(Game._colorsArray[i]));
+            boardRoad.addElement(new Exit(Game._colorsArray[i]));
+            boardRoad.addElement(new SafeTwo(Game._colorsArray[i]));
             }
         GameControl.addHouses(boardRoad);
         GameControl.addFinish(boardRoad);
@@ -474,7 +481,7 @@ class GameControl{
         let player;
         let playersArray = [];
         for(let i = 0; i< playerNumber; i++){
-            player = new Player(GameControl._colorsArray[i], tabsNumber);
+            player = new Player(Game._colorsArray[i], tabsNumber);
             playersArray.push(player);
         }
         return playersArray;
@@ -522,13 +529,14 @@ class GameControl{
     }
 
     static availableSquares(tab){
-        let n1 = Game._currentDiceValues[0];
-        let n2 = Game._currentDiceValues[1];
+        let game = GameControl._currentGame;
+        let n1 = game.currentDiceValues[0];
+        let n2 = game.currentDiceValues[1];
         let availablesSquares = [];
             switch (currentSquareType){
                 case 'SeguroUno':
                     if(tab.currentSquare.color === tab.color){
-                        if(n1+n2 === 8 || n1 === 8 || n2 === 8){
+                        if(n1+n2 === 8){
                             availablesSquares.push(getFinishSquare(tab.color));
                         }
                     }else{
@@ -557,7 +565,7 @@ class GameControl{
                 }
                 break;
                 case 'House':
-                    if(GameControl.isDicePar()){
+                    if(GameControl.isDicePar(game)){
                         availablesSquares.push(tab.currentSquare.next);
                     }
         }
@@ -565,9 +573,10 @@ class GameControl{
     }
 
     static throwDices(){
+        let game = GameControl._currentGame;
         let n1 = Math.floor(Math.random() * (7 - 1)) + 1;
         let n2 = Math.floor(Math.random() * (7 - 1)) + 1;
-        Game._currentDiceValues = [n1,n2];
+        game.currentDiceValues = [n1,n2];
     }
 
     static orderingRound(game){
@@ -577,37 +586,34 @@ class GameControl{
         let turnsOrderedArray = [];
         while(!round.isEnd(turn) || sw == 0){
             sw = 1;
-            //*Empieza el turno ----------------------------------------------------------
             let timeout = setTimeoutimeout(GameControl.throwDices(),5*1000);
             UiControl.activateBtnDices();
             do{
                 await Timer.sleep(1000);
-            }while(game._currentDiceValues === 0);
-            UiControl.desactivateBtnDices();
+            }while(game.currentDiceValues === 0);
             clearTimeout(timeout);
-            //*Obtener arreglo ordenado: -------------------------------------------------
+            UiControl.desactivateBtnDices();
             if(turnsOrderedArray.length === 0){
-                turnsOrderedArray.push([turn, game._currentDiceValues]);
+                turnsOrderedArray.push([turn, game.currentDiceValues]);
             }
             else{
                 let sw2 = 0;
                 let i = 0;
                 while(sw2 === 0 && i<turnsOrderedArray.length){
-                    if(turnsOrderedArray[i]> game._currentDiceValues){
+                    if(turnsOrderedArray[i]> game.currentDiceValues){
                         sw2 = 1
                     }
                     i++;
                 }
                 if (sw2 === 0){
-                    turnsOrderedArray.push([turn, game._currentDiceValues]);
+                    turnsOrderedArray.push([turn, game.currentDiceValues]);
                 }else{
-                    turnsOrderedArray.splice(i-1,0,[turn, game._currentDiceValues]);
+                    turnsOrderedArray.splice(i-1,0,[turn, game.currentDiceValues]);
                 }
             }
             turn = turn.next;
             GameControl.clearDiceValues();
         }
-        //*Ordenar los turnos ------------------------------------------------------------
         round = new round();
         for(i = turnsOrderedArray.length; i>0;i++){
             round.addElement(turnsOrderedArray[i][0]);
@@ -620,11 +626,11 @@ class GameControl{
             let timeout = setTimeoutimeout(GameControl.throwDices(),5*1000);
             UiControl.activateBtnDices();
             do{
-                await Timer.sleep(1000);
-            }while(game._currentDiceValues === 0);
-            UiControl.desactivateBtnDices();
+                await Timer.sleep(100);
+            }while(game.currentDiceValues === 0);
             clearTimeout(timeout);
-            if(GameControl.isDicePar()){
+            UiControl.desactivateBtnDices();
+            if(GameControl.isDicePar(game)){
                 let tabsArray = turn.player.tabsArray;
                 tabsArray.forEach(tab, ()=>{
                     if(tab.state === 'house'){
@@ -669,7 +675,7 @@ class GameControl{
         let square = GameControl.searchSquareById(squareUi.getAttribute('id'));
         if(square.type = 'Finish'){
             tab.state = 'finish';
-            game.gameFinished = GameControl.GameFinished(tab); 
+            game.gameFinished = GameControl.gameFinished(tab); 
         }
         if(tab.state === 'house'){
             this.jailAllTabsInside(tab, square);
@@ -737,20 +743,21 @@ class GameControl{
         
     }
 
-    static isDicePar(){
-        return game._currentDiceValues[0] === game._currentDiceValues[1];
+    static isDicePar(game){
+        return game.currentDiceValues[0] === game.currentDiceValues[1];
     }
 
     static normalTurn(turn){
+        let game = GameControl._currentGame;
         let timeout = setTimeout(GameControl.throwDices(), 5*1000);
         UiControl.activateBtnDices();
         do{
             await Timer.sleep(250);
-        }while(game._currentDiceValues === [0][1]);
+        }while(game.currentDiceValues === [0][1]);
         clearTimeout(timeout);
         UiControl.desactivateBtnDices();
         //verificar si se puede mover algo
-        if(GameControl.isDicePar()) turn.timesThrowed++;
+        if(GameControl.isDicePar(game)) turn.timesThrowed++;
         if(turn.timesThrowed < 3){
             let tabsArray = turn.player.tabsArray;
             let canDoMovements = false;
@@ -816,9 +823,9 @@ class GameControl{
     }
 
     static nextTurn(turn){
-        game.currentTurn = turn.next;
-        GameControl.clearDiceValues();
         turn.doMovement = false;
+        GameControl.clearDiceValues();
+        game.currentTurn = turn.next;
     }
 
     static playTurn(turn){

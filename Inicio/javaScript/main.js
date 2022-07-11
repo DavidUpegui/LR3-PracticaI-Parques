@@ -8,6 +8,6 @@ function output(ident,clase){
     output.textContent = price.value
 
     price.addEventListener('input', function() {
-     output.textContent = price.value
+    output.textContent = price.value
     });
 }
