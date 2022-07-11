@@ -5,7 +5,6 @@
 }
 
 html, body {
-    height: 100%;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -16,11 +15,14 @@ html, body {
 .home{
     height: 200px;
     width: 200px;
-    background-color: aliceblue;
     position: absolute;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .casillaVertical{
+    display: flex;
+    flex-wrap: wrap;
     height: 118px;
     width: 38px;
     background-color: blueviolet;
@@ -117,4 +119,34 @@ html, body {
 #redSeguroDos{
     margin-top: 510px;
     margin-left: 714px;                                                           
+}
+
+.tab {
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    border-radius: 50%;
+    z-index: 1000;
+    border: solid;
+    border-color: black;
+    border-width: 2px;
+}
+
+.greenTab{
+    background-color: rgb(66, 210, 66);
+}
+.blueTab{
+    background-color: rgb(53, 53, 188);
+}
+.yellowTab{
+    background-color: rgb(244, 244, 115);
+}
+.redTab{
+    background-color: rgb(248, 56, 56);
+}
+.pinkTab{
+    background-color: rgb(254, 127, 148);
+}
+.orangeTab{
+    background-color: rgb(244, 176, 49);
 }

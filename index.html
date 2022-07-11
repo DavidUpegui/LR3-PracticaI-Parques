@@ -4,14 +4,56 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/styles.css">
-    <title>Parques</title>
+    <link rel="stylesheet" href="css/stylesIndex.css">
+    <link rel="stylesheet" href="./css/stylesGlobal.css">
+    <title>Document</title>
 </head>
 <body>
-    <div id="parent"class="container">
-
+    <header id="head">
+        <img alt="Parques picapiedras" src="css/titulo.png" id="titulo">
+        <img alt="icono" src="css/parques.jfif" id="icono">
+    </header>
+    <div id="cont">
+        <form method="post">
+            <li>
+                <p class="">Elija en qué tablero desea jugar:</p><br><br>
+                <input name="tamañoTablero" type="radio" id="tablero4" value="4" checked="true" class="btn-radio">
+                <label for="tablero4" class="label"> Tablero 4 puestos</label>
+                <br>
+                <input name="tamañoTablero" type="radio" id="tablero6" value="6" class="btn-radio">
+                <label for="tablero6" class="label"> Tablero 6 puestos</label>  
+            </li>
+            <li>
+                <label for="playerNumber">Seleccione el número de jugadores:</label>
+                    <select name="selectPlayerNumber" id="playerNumber">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected="selected">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+            </li>
+            <li>
+                <label for="tabsNumber">Seleccione el número de fichas por jugador:</label>
+                <select name="selectTabsNumber" id="tabsNumber">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4" selected="selected">4</option>
+                </select>
+            </li>
+            <li>
+                <input type="submit" value="Jugar" class="btn" id="btnSubmit">
+            </li>
+        </form>
     </div>
-
-    <script src="./js/script.js"></script>
+    <footer id="foot">
+        <p>
+            Practica I. Lógica y Representación III. Ingeniería de Sistemas - Universidad de Antioquia.
+        </p>
+        <p>
+            Desarrollada por David Upegui y Juan Manuel Vera (2022)
+        </p>
+    </footer>
+    <script src="./js/index.js"></script>
 </body>
 </html>

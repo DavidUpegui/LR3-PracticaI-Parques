@@ -374,8 +374,8 @@ class Game{
     _players;
     _round;
     _boardRoad;
-    _isFinished;
-    _currentDiceValues;
+    _isFinished = false;
+    _currentDiceValues = [-1,0];
     static _colorsArray = ['blue', 'yellow', 'red', 'green','orange','pink'];
     static _currentTurn;
     
@@ -495,13 +495,15 @@ class GameControl{
             arr = []
             for(let i = 0; i<tabsNumber;i++){
                 tab = new Tab(player.color, i);
-                tab.currentSquare = tab.color + 'House';
                 arr.push(tab);
             }
             player.tabsArray = arr;
             for(let j = 0; j < houseArray.length;j++){
                 if (houseArray[j].color === player.color){
                     houseArray[j].tabsInside = arr;
+                    arr.forEach(tab =>{
+                        tab.currentSquare = houseArray[j];
+                    });
                 }
             }
         });
@@ -579,7 +581,7 @@ class GameControl{
         game.currentDiceValues = [n1,n2];
     }
 
-    static orderingRound(game){
+    static async orderingRound(game){
         let round = game.round;    //! --------Pilas con esto ¿Cuándo es necesario tener variables estáticas?---------
         let turn = game.round.first;
         let sw = 0;
@@ -621,7 +623,7 @@ class GameControl{
         game.round = round;
     }
 
-    static getOutHouse(turn){
+    static async getOutHouse(turn){
         while(turn.timesThrowed < 3){
             let timeout = setTimeoutimeout(GameControl.throwDices(),5*1000);
             UiControl.activateBtnDices();
@@ -697,12 +699,12 @@ class GameControl{
         let players = game.players;
         let flag = true;
         let tabsArray;
-        let tab;
+        let auxiliarTab;
         for(let i = 0; i< players.lenght; i++){
             if (players[i].color === tab.color){
                 tabsArray = players.tabsArray;
                 for(let j = 0; j< tabsArray.lenght;j++){
-                    tab = tabsArray[j];
+                    auxiliarTab = tabsArray[j];
                     if(tab.state !== 'Finished'){
                         flag = false;
                         break;
@@ -747,7 +749,7 @@ class GameControl{
         return game.currentDiceValues[0] === game.currentDiceValues[1];
     }
 
-    static normalTurn(turn){
+    static async normalTurn(turn){
         let game = GameControl._currentGame;
         let timeout = setTimeout(GameControl.throwDices(), 5*1000);
         UiControl.activateBtnDices();
@@ -771,7 +773,7 @@ class GameControl{
                 timeout = setTimeout(GameControl.moveAutamatically(turn), 20*1000);
                 UiControl.activateTabs(turn);  
                 do{
-                    await.Time.sleep(250);
+                    await Time.sleep(250);
                 }while(!turn.doMovement);
                 clearTimeout(timeout);
                 UiControl.desactivateTabs(turn);
@@ -971,8 +973,8 @@ class UiControl{
 
     static moveTabUi(tab,square){
         let tabUi = document.getElementById(tab.id);
-        let square = document.getElementById(square.id);
-        square.appendChild(tabUi);
+        let squareUi = document.getElementById(square.id);
+        squareUi.appendChild(tabUi);
     }
 
     static activateSquare(square){
@@ -988,9 +990,24 @@ class UiControl{
             }
         });
     }
+
+    static activateRangeInput(ident,clase){
+        let price = document.querySelector('#' + ident);
+        let output = document.querySelector('.' + clase);
+        output.textContent = price.value;
+        price.addEventListener('input' , ()=>{
+            output.textContent = price.value;
+        });
+    }
+
+    static initRangeInput(){
+        UiControl.activateRangeInput('jugadores' , 'jugadoresOutput');
+        UiControl.activateRangeInput('fichas' , 'fichasOutput');
+    }
 }
 
 class EventControl{
+    static _tablero;
 
     static evtLoadGame(boardSize,playerNumber, tabsNumber){
         boardSize = parseInt(document.getElementById('boardSize').getAttribute('text'));
@@ -1019,5 +1036,20 @@ class EventControl{
     }
 }
 
-console.log(new Game(4,4,4));
+class App{
+
+    static init(){
+        let boardSize = sessionStorage.getItem('boardSize');
+        let playerNumber = sessionStorage.getItem('playerNumber');
+        let tabsNumber = sessionStorage.getItem('tabsNumber');
+
+        let game = new Game(boardSize,playerNumber,tabsNumber);
+        GameControl._currentGame = game;
+        console.log(game);
+    }
+}
+
+App.init()
+
+
 
