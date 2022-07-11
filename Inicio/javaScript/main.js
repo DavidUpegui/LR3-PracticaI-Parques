@@ -3,18 +3,20 @@ output("fichas","fichasOutput")
 var boton = document.getElementById('button')
 var t4 = document.getElementById('tablero4')
 var t6 = document.getElementById('tablero6')
+var miStorage = window.sessionStorage
 var tablero
 t4.addEventListener('click',cambioTablero4)
 t6.addEventListener('click',cambioTablero6)
 boton.addEventListener('click',function(){
-    if (tablero = 4){
+    if (tablero === 4){
         window.location.href = './tablero4.html'
-    }else if(tablero = 6){
+    }else if(tablero === 6){
         window.location.href = './tablero6.html'
     }
     else{
         console.error();
     }
+    miStorage.setItem('1',tablero)
 })
 
 
