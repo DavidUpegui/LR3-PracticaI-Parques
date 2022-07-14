@@ -370,12 +370,36 @@ class Round extends CircularNodeList{
 
 }
 
+class ActionManager extends Array{
+    _lastActionIndex = -1;
+    
+    startAction(){
+        this.lastActionIndex++;
+        this[this.lastActionIndex] = 1;
+        console.log('Empezó la acción del index' + (this.lastActionIndex));
+    }
+
+    finishAction(){
+        console.log('Terminó la acción del index' + (this.lastActionIndex));
+        this[this.lastActionIndex] = 0;
+        this.lastActionIndex--;
+    }
+
+    get lastActionIndex(){
+        return this._lastActionIndex;
+    }
+    set lastActionIndex(lastActionIndex){
+        this._lastActionIndex = lastActionIndex;
+    }
+}
+
 class Game{
     _players;
     _round;
     _boardRoad;
     _isFinished = false;
     _currentDiceValues = [-1,0];
+    _actionManager;
     static _colorsArray = ['blue', 'yellow', 'red', 'green','orange','pink'];
     static _currentTurn;
     
@@ -383,7 +407,8 @@ class Game{
     constructor(boardSize, playerNumber,tabsNumber){
         this._boardRoad = GameControl.generateBoardRoad(boardSize);  
         this._players = GameControl.generatePlayers(playerNumber, tabsNumber); 
-        this._round = GameControl.generateRound(this._players); 
+        this._round = GameControl.generateRound(this._players);
+        this._actionManager = new ActionManager(0,0,0,0,0)
         GameControl.generateTabs(this._players, tabsNumber,this._boardRoad);
     }
 
@@ -427,6 +452,12 @@ class Game{
     }
     set currentDiceValues(currentDiceValues){
         this._currentDiceValues = currentDiceValues;
+    }
+    get actionManager(){
+        return this._actionManager;
+    }
+    set actionManager(actionManager){
+        this.actionManager = actionManager;
     }
 }
 
@@ -579,20 +610,37 @@ class GameControl{
         let n1 = Math.floor(Math.random() * (7 - 1)) + 1;
         let n2 = Math.floor(Math.random() * (7 - 1)) + 1;
         game.currentDiceValues = [n1,n2];
+        console.log('Se lanzaron los dados');
     }
 
     static async orderingRound(game){
-        let round = game.round;    //! --------Pilas con esto ¿Cuándo es necesario tener variables estáticas?---------
+        Timer.sleep(500);
+        let actionManager = game.actionManager;
+        actionManager.startAction();
+        console.log('EMPIEZA ORDERINGROUND');
+        let actionIndex;
+        let round = game.round;  
         let turn = game.round.first;
         let sw = 0;
         let turnsOrderedArray = [];
+        UiControl.alertOrderingRound();
+        do{
+            actionIndex = actionManager.lastActionIndex;
+            console.log('El valor del index en ALERTorderingRound es: ' + actionIndex);
+            console.log('El valor la accion ALERTOrderingRound es: ' + actionManager[actionIndex]);
+            await Timer.sleep(1000);
+            
+        }while(actionManager[1] === 1)
+        
         while(!round.isEnd(turn) || sw == 0){
             sw = 1;
-            let timeout = setTimeoutimeout(GameControl.throwDices(),5*1000);
+            let timeout = setTimeout(GameControl.throwDices(),5*1000);
             UiControl.activateBtnDices();
             do{
                 await Timer.sleep(1000);
-            }while(game.currentDiceValues === 0);
+                console.log(game.currentDiceValues)
+            }while(game.currentDiceValues === [-1,0]);
+
             clearTimeout(timeout);
             UiControl.desactivateBtnDices();
             if(turnsOrderedArray.length === 0){
@@ -621,11 +669,14 @@ class GameControl{
             round.addElement(turnsOrderedArray[i][0]);
         }
         game.round = round;
+        actionManager.finishAction();
+        console.log('TERMINÓ ORDERING');
+
     }
 
     static async getOutHouse(turn){
         while(turn.timesThrowed < 3){
-            let timeout = setTimeoutimeout(GameControl.throwDices(),5*1000);
+            let timeout = setTimeout(GameControl.throwDices(),5*1000);
             UiControl.activateBtnDices();
             do{
                 await Timer.sleep(100);
@@ -649,6 +700,7 @@ class GameControl{
     }
 
     static clearDiceValues(){
+        let game = GameControl._currentGame;
         game._currentDiceValues === [-1,0];
     }
 
@@ -825,12 +877,16 @@ class GameControl{
     }
 
     static nextTurn(turn){
+        let game = GameControl._currentGame;
         turn.doMovement = false;
         GameControl.clearDiceValues();
         game.currentTurn = turn.next;
     }
 
     static playTurn(turn){
+        console.log('EMPIEZA PLAYTURN')
+        let actionManager = GameControl._currentGame.actionManager;
+        actionManager.startAction();
         let tabsArray = turn.player.tabsArray;
         let inHouse = true;
         for(let i = 0; i<tabsArray.length;i++){
@@ -843,6 +899,7 @@ class GameControl{
         }else{
             GameControl.normalTurn(turn);  
         }
+        console.log('TERMINÓ PLAYTURN')
     }
 
     static tabOutHouse(tab, houseSquare){
@@ -850,12 +907,29 @@ class GameControl{
     }
 
 
-    static startGame(game){
-        GameControl.orderingRound();
+    static async startGame(game){
+        let actionIndex;
+        let actionManager = game.actionManager;
+
+        UiControl.alertGameStart();
+        do{
+            actionIndex = actionManager.lastActionIndex;
+            await Timer.sleep(1000);
+        }while(actionManager[actionIndex] === 1);
+        GameControl.orderingRound(game);
+        console.log('Después de orderingRound')
+
+        do{
+            actionIndex = actionManager.lastActionIndex;
+            console.log('El valor del index en orderingRound es: ' + actionIndex);
+            console.log('El valor la accion OrderingRound es: ' + actionManager[actionIndex]);
+            await Timer.sleep(1000);
+        }while(actionManager[0] === 1);
+
         game._currentTurn = game.round.first;
         do{
             GameControl.playTurn(game._currentTurn);
-            if(GameControl.isDicePar()){
+            if(GameControl.isDicePar(game)){
                 GameControl.repeatTurn(game.currentTurn);  
             }else{
                 GameControl.nextTurn(game.currentTurn); //*Se debe actualizar game.currentTurn dentro de la función
@@ -896,7 +970,63 @@ class UiControl{
             }
         });
     }
+
+    static async alertReapeatTurn(){
+        let alert = document.getElementById('alert');
+        alert.innerHTML = `Vuelve a lanzar`
+        alert.classList.add('show-alert');
+        await Timer.sleep(3000);
+        alert.classList.remove('show-alert');
+    }
+
+    static async alertNewTurn(turn){
+        let actionManager = GameControl.game.actionManager;
+        actionManager.startAction();
+        let alert = document.getElementById('alert');
+        alert.innerHTML = `Empieza el turno del jugador ${turn.player.color}`
+        alert.classList.add('show-alert');
+        await Timer.sleep(3000);
+        alert.classList.remove('show-alert');
+        actionManager.finishAction();
         
+    }
+
+    static async alertGameStart(){
+        let actionManager = GameControl._currentGame.actionManager;
+        actionManager.startAction();
+        console.log('EMPEZÓ ALERTGAMESTART')
+        let alert = document.getElementById('alert');
+        alert.innerHTML = `Empieza el juego`
+        alert.classList.add('show-alert');
+        await Timer.sleep(3000);
+        alert.classList.remove('show-alert');
+        await Timer.sleep(700);
+        actionManager.finishAction();
+        console.log('TERMINÓ ALERTGAMESTART')
+    }
+
+    static async alertOrderingRound(){
+        console.log('EMPIEZA ALERT ORDERINGROUND');
+        let actionManager = GameControl._currentGame.actionManager;
+        actionManager.startAction();
+        let alert = document.getElementById('alert');
+        alert.innerHTML = `Ronda para elegir el orden de los turnos`
+        alert.classList.add('show-alert');
+        await Timer.sleep(3000);
+        alert.classList.remove('show-alert');
+        actionManager.finishAction();
+        console.log('TERMINA ALERT ORDERINGROUND');
+
+    }
+
+    static async alertNotPossibleMovements(){
+        let alert = document.getElementById('alert');
+        alert.innerHTML = `No hay movimientos posibles, pasa turno`
+        alert.classList.add('show-alert');
+        await sleep(3500);
+        alert.classList.remove('show-alert');
+    }
+
     static uncklickTab(tab){
         let tabUI = document.getElementById(tab.id);
         let availableSquareUI;
@@ -932,7 +1062,7 @@ class UiControl{
 
     static activateBtnDices(){
         let btnDices = document.getElementById('btnDices');
-        btnDices.addEventListener('click', function(){GameControl.throwDices()});
+        btnDices.addEventListener('click', function(){GameControl.throwDices});
         /*
         TODO Adicionar las clases para que el botón se vea activado.
         */
@@ -940,7 +1070,7 @@ class UiControl{
 
     static desactivateBtnDices(){
         let btnDices = document.getElementById('btnDices');
-        btnDices.removeEventListener('click' , function(){GameControl.throwDices()});
+        btnDices.removeEventListener('click' , function(){GameControl.throwDices});
         /*
         TODO Remover las clases añadidas para que el botón parezca desactivado.
         */
@@ -1045,11 +1175,15 @@ class App{
 
         let game = new Game(boardSize,playerNumber,tabsNumber);
         GameControl._currentGame = game;
-        console.log(game);
+        console.log(game)
+        GameControl.startGame(game);
     }
 }
 
-App.init()
+App.init();
+
+
+
 
 
 
