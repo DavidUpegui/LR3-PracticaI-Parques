@@ -130,6 +130,32 @@ html, body {
     margin-left: 714px;                                                           
 }
 
+#contDados{
+    height: 350px;
+    width: 400px;
+    border: 5px solid blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#controles{
+    height: 550px;
+    width: 400px;
+    border: 5px solid blue;
+}
+
+#panel{
+    justify-content: center;
+}
+
+#btnDices{
+    margin-top: 20px;
+    height: 50px;
+    width: 50px;
+}
+
 .tab {
     width: 30px;
     height: 30px;
