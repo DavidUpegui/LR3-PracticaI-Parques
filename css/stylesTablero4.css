@@ -10,8 +10,54 @@ html, body {
     justify-content: center;
     align-items: center;
     margin:0;
+    background-color: azure;
+}
+.content{
+    display: flex;
+    flex-direction: row;
 }
 
+.dice-container{
+    display: flex;
+    justify-content: center;
+    margin: 5px;
+}
+
+.dice-img img{
+    height: 100px;
+    width: 100px;
+    margin: 3px;
+    border-radius: 5px;
+}
+
+.dice-control{
+    background-color: rgb(203, 251, 251);
+    padding: 15px;
+    margin-top: 20%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 30% 8px 8px 8px;
+}
+.btn-dices{
+    width: 60%;
+    margin: 10px 0;
+    height: 35px;
+    background-color: rgb(120, 120, 239);
+    color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 4px;
+    transition-duration: 300ms ;
+}
+
+.btn-dices:hover{
+    background-color: rgb(88, 88, 240);
+    cursor: pointer;
+    width: 70%;
+    transition-duration: 300ms ;
+}
 .home{
     height: 200px;
     width: 200px;
@@ -36,7 +82,14 @@ html, body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+}
 
+.control-bar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    background-color: azure;
 
 }
 
@@ -258,7 +311,3 @@ html, body {
     transition: opacity 0.7s ease-in-out;
 }
 
-.dado{
-    height: 100px;
-    width: 100px;
-}

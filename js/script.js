@@ -798,9 +798,6 @@ class GameControl{
         let houseArray = game.boardRoad.houseArray;
         square.tabsInside.forEach(tabInside=>{
             if(tabInside.color !== tab.color){
-                console.log('Se come la ficha');
-                console.log(tab)
-                console.log(houseSquare);
                 for(let  i = 0; i<houseArray.length;i++){
                     if (houseArray[i].color === tabInside.color){
                         houseSquare = houseArray[i];
@@ -1206,11 +1203,6 @@ class UiControl{
         price.addEventListener('input' , ()=>{
             output.textContent = price.value;
         });
-    }
-
-    static initRangeInput(){
-        UiControl.activateRangeInput('jugadores' , 'jugadoresOutput');
-        UiControl.activateRangeInput('fichas' , 'fichasOutput');
     }
 
     static uiDices(){
