@@ -25,15 +25,23 @@ html, body {
     flex-wrap: wrap;
     height: 118px;
     width: 38px;
-    background-color: blueviolet;
     position: absolute;
+    align-items: center;
 }
 
 .casillaHorizontal{
     height: 38px;
     width: 118px;
-    background-color: aqua;
     position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+
+}
+
+.square-showed{
+    background-color: blueviolet;
 }
 
 #tablero {
@@ -131,6 +139,52 @@ html, body {
     border: solid;
     border-color: black;
     border-width: 2px;
+}
+
+.casillaHorizontal .tab{
+    width: 18px;
+    height: 18px;
+    margin: 5px;
+    border-radius: 50%;
+    z-index: 1000;
+    border: solid;
+    border-color: black;
+    border-width: 2px;
+}
+
+.casillaVertical .tab{
+    width: 18px;
+    height: 18px;
+    margin: 5px;
+    border-radius: 50%;
+    z-index: 1000;
+    border: solid;
+    border-color: black;
+    border-width: 2px;
+}
+
+.casillaHorizontal .tab-clicked{
+    width: 18px;
+    height: 18px;
+    margin: 5px;
+    border-radius: 50%;
+    z-index: 1000;
+    border: solid;
+    border-width: 2px;
+    border: solid;
+    border-color: rgb(255, 174, 0);
+}
+
+.casillaVertical .tab-clicked{
+    width: 18px;
+    height: 18px;
+    margin: 5px;
+    border-radius: 50%;
+    z-index: 1000;
+    border: solid;
+    border-width: 2px;
+    border: solid;
+    border-color: rgb(255, 174, 0);
 }
 
 .greenTab{
