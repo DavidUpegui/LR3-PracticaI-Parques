@@ -177,3 +177,8 @@ html, body {
     opacity: 1;
     transition: opacity 0.7s ease-in-out;
 }
+
+.dado{
+    height: 100px;
+    width: 100px;
+}

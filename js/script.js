@@ -1134,6 +1134,17 @@ class UiControl{
         UiControl.activateRangeInput('jugadores' , 'jugadoresOutput');
         UiControl.activateRangeInput('fichas' , 'fichasOutput');
     }
+
+    static uiDices(){
+        let game = GameControl._currentGame
+        var d1 = document.getElementById('dice1')
+        var d2 = document.getElementById('dice2')
+        GameControl.throwDices()
+        let n1 = game.currentDiceValues[0]
+        let n2 = game.currentDiceValues[1]
+        d1.src = `css/dados/${n1}.png`
+        d2.src = `css/dados/${n2}.png`
+    }
 }
 
 class EventControl{
