@@ -15,9 +15,9 @@ function evt(e){
     sessionStorage.setItem('playerNumber', playerNumber);
     sessionStorage.setItem('tabsNumber', tabsNumber);
     if(boardSize === '4'){
-        window.open('../tablero4.html','_self');
+        window.open('./tablero4.html','_self');
     }else{
-        window.open('../tablero6.html','_self');
+        window.open('./tablero6.html','_self');
     }
 }
 
