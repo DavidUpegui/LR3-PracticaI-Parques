@@ -99,8 +99,8 @@ html, body {
 }
 
 .finish{
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     background-color: aqua;
     position: absolute;
 }
@@ -192,23 +192,23 @@ html, body {
 }
 
 #blueFinish{
-    margin-top: 330px;
-    margin-left: 410px;
+    margin-top: 320px;
+    margin-left: 400px;
 }
 
 #yellowFinish{
-    margin-top: 410px;
-    margin-left: 330px;
+    margin-top: 400px;
+    margin-left: 320px;
 }
 
 #greenFinish{
-    margin-top: 410px;
-    margin-left: 490px;
+    margin-top: 400px;
+    margin-left: 480px;
 }
 
 #redFinish{
-    margin-top: 490px;
-    margin-left: 410px;
+    margin-top: 480px;
+    margin-left: 400px;
 }
 
 #contDados{
