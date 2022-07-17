@@ -63,7 +63,9 @@ class Tab{
     _color;
     _id;
     _currentSquare;
-    _state = 'house'; 
+    _state = 'house';
+    _canEat = false;
+
     
     constructor(color, i ){
         this._color = color;
@@ -103,12 +105,17 @@ class Tab{
     set state(state){
         this._state  = state;
     }
+    get canEat(){
+        return this._canEat;
+    }
+    set canEat(canEat){
+        this._canEat = canEat;
+    }
 }
 
 class Player{
     _tabsArray;
     _color;
-    _name;
     _tabsQuantity;
     _order = null;
     _inHouse = true;
@@ -168,6 +175,7 @@ class Player{
     set inHouse(inHouse){
         this._inHouse = inHouse;
     }
+
 }
 
 // CLASES DE CASILLAS #################################################################################################################
@@ -296,6 +304,7 @@ class Turn extends SimpleNode{
     _player;
     _timesThrowed = 0;
     _doMovement = false;
+    _canEat = false;
 
     constructor(player){
         super();
@@ -320,6 +329,12 @@ class Turn extends SimpleNode{
     }
     set doMovement(doMovement){
         this._doMovement = doMovement;
+    }
+    get canEat(){
+        return this._canEat;
+    }
+    set canEat(canEat){
+        this._canEat = canEat;
     }
 }
 
@@ -614,6 +629,7 @@ class GameControl{
         let n1 = Math.floor(Math.random() * (7 - 1)) + 1;
         let n2 = Math.floor(Math.random() * (7 - 1)) + 1;
         game.currentDiceValues = [n1,n2];
+        UiControl.showDicesImg(n1,n2);
         console.log(game.currentDiceValues);
     }
 
@@ -683,14 +699,14 @@ class GameControl{
         let exitUi;
         let game = GameControl._currentGame;
         while(turn.timesThrowed < 3){
-            // timeout = setTimeout(GameControl.throwDices,5*1000);
-            // UiControl.activateBtnDices();
-            // do{
-            //     await Timer.sleep(100);
-            // }while(game.currentDiceValues[0] === -1);
-            // clearTimeout(timeout);
-            // UiControl.desactivateBtnDices();
-            game.currentDiceValues=[1,1];
+            timeout = setTimeout(GameControl.throwDices,10*1000);
+            UiControl.activateBtnDices();
+            do{
+                await Timer.sleep(100);
+                console.log('Esperando a que lance en getOutHouse');
+            }while(game.currentDiceValues[0] === -1);
+            clearTimeout(timeout);
+            UiControl.desactivateBtnDices();
             if(GameControl.isDicePar(game)){
                 let tabsArray = turn.player.tabsArray;                
                 tabsArray.forEach(tab =>{
@@ -741,18 +757,15 @@ class GameControl{
         let turn = game.currentTurn;
         let tab = GameControl.searchTabById(tabUi.getAttribute('id'));
         let square = GameControl.searchSquareById(squareUi.getAttribute('id'));
-        console.log('El tipo de la casilla es: ' + square.type);
         if(square.type === 'Finish'){
             tab.state = 'finish';
             game.gameFinished = GameControl.gameFinished(tab); 
         }
         if(tab.state === 'house'){
-            console.log('Pasa por la parte de: Está en casa, verifique que no se come nada')
             this.jailAllTabsInside(tab, square);
             tab.state = 'playing'
         }else{
             if(square.type !== 'Salida'){
-                console.log('Pasa por la parte de comerse a las fichas')
                 this.jailAllTabsInside(tab,square)
             }
         }
@@ -793,14 +806,16 @@ class GameControl{
     }
 
     static jailAllTabsInside(tab, square){
-        let houseSquare;
         let game = GameControl._currentGame;
+        let houseSquare;
+        let turn = game.currentTurn;
         let houseArray = game.boardRoad.houseArray;
         square.tabsInside.forEach(tabInside=>{
             if(tabInside.color !== tab.color){
                 for(let  i = 0; i<houseArray.length;i++){
                     if (houseArray[i].color === tabInside.color){
                         houseSquare = houseArray[i];
+                        turn.canEat = false;
                         break;
                     }
                 }
@@ -833,29 +848,47 @@ class GameControl{
         do{
             await Timer.sleep(1000);
         }while(!action.isFinished);
-
-        // 
-        game.currentDiceValues = [2,5];
         UiControl.activateBtnDices();
+        game.currentDiceValues = [3,3];
         do{
-            console.log('Espera')
-            await Timer.sleep(250);
+                console.log('Esperando a que lance en normalTurn');
+                await Timer.sleep(250);
         }while(game.currentDiceValues[0] === -1);
         // clearTimeout(timeout);
         UiControl.desactivateBtnDices();
-        //verificar si se puede mover algo
-        if(turn.timesThrowed < 3){
+        do{
+            await Timer.sleep(1000);
+        }while(!action.isFinished);
+        if(turn.timesThrowed === 2 && GameControl.isDicePar(game)){
+            action = Action.generateNewAction();
+            action.doAction0(action,UiControl.alertWinnableTabs);
+            do{
+                await Timer.sleep(1000);
+            }while(!action.isFinished);
+            action = Action.generateNewAction();
+            action.doAction1(turn,action,UiControl.activateWinnableTabs);
+            do{
+                await Timer.sleep(1000);
+            }while(!action.isFinished);
+        }
+        else{
             let tabsArray = turn.player.tabsArray;
             let canDoMovements = false;
             let tab;
+            let inHouse;
+            let sw = 0;
             for(let i = 0; i<tabsArray.length;i++){
                 tab = tabsArray[i];
-                if (GameControl.availableSquares(tab).length !== 0){ //No hay movimientos posibles
+                if (GameControl.availableSquares(tab).length !== 0 && sw === 0){ //No hay movimientos posibles
                     canDoMovements = true;
-                    break;
+                    sw = 1;
+                }
+                if (tab.state === 'house'){
+                    inHouse = true;
                 }
             }
             if(canDoMovements){
+                GameControl.verifyCanEat(turn);
                 // timeout = setTimeout(function(){GameControl.moveAutamatically(turn)}, 20*1000);
                 UiControl.activateTabs(turn);  
                 do{
@@ -865,6 +898,16 @@ class GameControl{
                 // clearTimeout(timeout);
                 UiControl.desactivateTabs(turn);
             }else{
+                if(GameControl.isDicePar(game) && inHouse){
+                    // timeout = setTimeout(function(){GameControl.moveAutamatically(turn)}, 20*1000);
+                    UiControl.activateTabs(turn);  
+                    do{
+                        await Timer.sleep(250);
+                        console.log('Esperando a que mueva')
+                    }while(!turn.doMovement);
+                    // clearTimeout(timeout);
+                    UiControl.desactivateTabs(turn);
+                }
                 action = Action.generateNewAction();
                 action.doAction0(action, UiControl.alertNotPossibleMovements);
                 do{
@@ -872,14 +915,62 @@ class GameControl{
                 }while(!action.isFinished);
             }
         }
-        else{
-            timeout = setTimeout(GameControl.moveAutamatically(turn), 20*1000);
-            UiControl.activateWinnableTabs(turn);
+        if(turn.canEat){
+            UiControl.activateBtnSoplar()
+            let timeout2 =  setTimeout(UiControl.desactivateBtnSoplar , 2*1000)
+            await Timer.sleep(2000);
         }
         actionPassed.finishAction();
+    }
 
+    static soplar(turn){
+        let tab;
+        let houseArray = GameControl._currentGame.boardRoad.houseArray;
+        let tabsArray = turn.player.tabsArray;
+        for(let i = 0; i < tabsArray.length; i++){
+            tab = tabsArray[i];
+            if(tab.canEat === true){
+                for(let j = 0; j< houseArray.length;j++){
+                    if(houseArray[j].color = tab.color){
+                        let tabUi = document.getElementById(tab.id);
+                        let squareUi = document.getElementById(houseArray[j].id);
+                        GameControl.moveTab(tabUi,squareUi);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
 
+    static unploadCanEat(tabsArray){
+        tabsArray.forEach(tab =>{
+            availableSquares = GameControl.availableSquares(tab);
+            for(let i = 0; i < availableSquares.length; i++){
+                tabsInside = availableSquares[i].tabsInside;
+                for (let j = 0; j<tabsInside.length;j++){
+                    if (tabsInside[j].color !== tab.color){
+                        tab.canEat = true;
+                    }
+                }
+            }
+        });
+    }
 
+    static verifyCanEat(tabsArray){
+        for(let i = 0; i<tabsArray.length;i++){
+            if(tabsArray[i].canEat){
+                return true;
+            }
+        }
+    }
+
+    static restartCanEat(tabsArray){
+        tabsArray.forEach(tab =>{
+            if(tab.canEat){
+                tab.canEat = false;
+            }
+        });
     }
 
     static selectWinnerTab(tabUi){
@@ -920,6 +1011,7 @@ class GameControl{
 
     static nextTurn(turn){
         let game = GameControl._currentGame;
+        turn.canEat = false;
         turn.timesThrowed = 0;
         turn.doMovement = false;
         GameControl.clearDiceValues();
@@ -1066,7 +1158,17 @@ class UiControl{
         alert.classList.remove('show-alert');
         action.finishAction();
         console.log('TERMINA ALERT ORDERINGROUND');
+    }
 
+    static async alertWinnableTabs(action){
+        console.log('EMPIEZA ALERT winnabletabs');
+        let alert = document.getElementById('alert');
+        alert.innerHTML = `Tres pares seguidos. Elige una ficha para ganar`
+        alert.classList.add('show-alert');
+        await Timer.sleep(1000);
+        alert.classList.remove('show-alert');
+        action.finishAction();
+        console.log('TERMINA ALERT winnabletabs');
     }
 
     static uncklickAllTabs(turn){
@@ -1083,7 +1185,6 @@ class UiControl{
     static uncklickTab(tab){
         let tabUI = document.getElementById(tab.id);
         let availableSquareUI;
-        GameControl._tabSelected = null;
         tabUI.classList.remove('tab-clicked');
         tabUI.setAttribute('pressed', 'false');
         let availableSquares = GameControl.availableSquares(tab);
@@ -1097,14 +1198,12 @@ class UiControl{
     static tabClicked(tabUI){
         let game = GameControl._currentGame;
         console.log('La TabUI clickeada es:');
-        console.log(tabUI);
         GameControl._tabSelected = tabUI;
         let tab = GameControl.searchTabById(tabUI.getAttribute('id'));
         if (tabUI.getAttribute('pressed')=== 'false'){
             UiControl.uncklickAllTabs(game.currentTurn);
             let availableSquareUI;
             tabUI.classList.add('tab-clicked');
-            tabUI.classList.add('aber');
             tabUI.setAttribute('pressed', 'true');
             let availableSquares = GameControl.availableSquares(tab);
             availableSquares.forEach(square =>{
@@ -1136,14 +1235,11 @@ class UiControl{
     static activateBtnDices(){
         let btnDices = document.getElementById('btnDices');
         btnDices.addEventListener('click',GameControl.throwDices);
-        /*
-        TODO Adicionar las clases para que el botón se vea activado.
-        */
     }
 
     static desactivateBtnDices(){
         let btnDices = document.getElementById('btnDices');
-        btnDices.removeEventListener('click' , function(){GameControl.throwDices});
+        btnDices.removeEventListener('click' , GameControl.throwDices);
         /*
         TODO Remover las clases añadidas para que el botón parezca desactivado.
         */
@@ -1156,11 +1252,13 @@ class UiControl{
         tabsArray.forEach(tab =>{
             if(tab.state === 'playing'){
                 tabUi = document.getElementById(tab.id);
+                tabUi.classList.add('tab-active');
                 tabUi.addEventListener('click', EventControl.evtTabs);
             }
             if(GameControl.isDicePar(game)){
                 if(tab.state === 'house'){
                     tabUi = document.getElementById(tab.id);
+                    tabUi.classList.add('tab-active');
                     tabUi.addEventListener('click', EventControl.evtTabs);
                 }
             }
@@ -1172,6 +1270,7 @@ class UiControl{
         let tabUi;
         tabsArray.forEach(tab =>{
             tabUi = document.getElementById(tab.id);
+            tabUi.classList.remove('tab-active');
             tabUi.removeEventListener('click', EventControl.evtTabs);
         });
     }
@@ -1189,29 +1288,27 @@ class UiControl{
 
     static activateWinnableTabs(turn){
         let tabsArray = turn.player.tabsArray;
+        let tabUi;
+        console.log('Este es el tabs Array ----------------------')
+        console.log(tabsArray);
         tabsArray.forEach(tab =>{
             if(tab.state === 'playing'){
-                tab.addEventListener('click', EventControl.evtWinnerTab)
+                tabUi = document.getElementById(tab.id);
+                tabUi.classList.add('tab-active');
+                tabUi.addEventListener('click', EventControl.evtWinnerTab)
             }
         });
     }
 
-    static activateRangeInput(ident,clase){
-        let price = document.querySelector('#' + ident);
-        let output = document.querySelector('.' + clase);
-        output.textContent = price.value;
-        price.addEventListener('input' , ()=>{
-            output.textContent = price.value;
-        });
+    static activateBtnSoplar(){
+        let btnSoplar = document.getElementById('btnSoplar');
+        btnSoplar.addEventListener('clic' , EventControl.evtSoplar);
     }
 
-    static uiDices(){
+    static showDicesImg(n1,n2){
         let game = GameControl._currentGame
-        var d1 = document.getElementById('dice1')
-        var d2 = document.getElementById('dice2')
-        GameControl.throwDices()
-        let n1 = game.currentDiceValues[0]
-        let n2 = game.currentDiceValues[1]
+        let d2 = document.getElementById('dice2')
+        let d1 = document.getElementById('dice1')
         d1.src = `css/dados/${n1}.png`
         d2.src = `css/dados/${n2}.png`
     }
@@ -1245,6 +1342,11 @@ class EventControl{
 
     static evtWinnerTab(e){
         GameControl.selectWinnerTab(e.target);
+    }
+    
+    static evtSoplar(){
+        let turn = GameControl._currentGame.currentTurn
+        GameControl.soplar(turn);
     }
 }
 

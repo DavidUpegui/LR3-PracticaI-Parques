@@ -94,7 +94,11 @@ html, body {
 }
 
 .square-showed{
-    background-color: blueviolet;
+    border: solid;
+    border-width: 3px;
+    outline: none;
+    border-color: blueviolet;
+    box-shadow: 0 0 15px blueviolet;
 }
 
 #tablero {
@@ -192,6 +196,7 @@ html, body {
     border: solid;
     border-color: black;
     border-width: 2px;
+    filter: brightness(100%);
 }
 
 .casillaHorizontal .tab{
@@ -226,6 +231,7 @@ html, body {
     border-width: 2px;
     border: solid;
     border-color: rgb(255, 174, 0);
+    filter: brightness(75%);
 }
 
 .casillaVertical .tab-clicked{
@@ -240,11 +246,27 @@ html, body {
     border-color: rgb(255, 174, 0);
 }
 
+.casillaHorizontal .tab-active{
+    outline: none;
+    box-shadow: 0 0 15px 5px rgb(255, 247, 0);
+}
+
+.casillaVertical .tab-active{
+    outline: none;
+    box-shadow: 0 0 15px 5px rgb(255, 247, 0);
+}
+
+.tab-active:hover{
+    filter: brightness(110%);
+    outline: none;
+    border-color: rgb(255, 247, 0);
+    box-shadow: 0 0 15px 5px rgb(255, 247, 0);
+}
 .greenTab{
     background-color: rgb(66, 210, 66);
 }
 .blueTab{
-    background-color: rgb(53, 53, 188);
+    background-color: rgb(64, 92, 216);
 }
 .yellowTab{
     background-color: rgb(244, 244, 115);
