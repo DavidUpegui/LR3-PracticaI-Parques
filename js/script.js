@@ -516,7 +516,7 @@ class GameControl{
         let houseArray = boardRoad.houseArray;
         let finishSquare;
         houseArray.forEach(house =>{
-            finishSquare = new Square(house.color, 'Finsih');
+            finishSquare = new Square(house.color, 'Finish');
             finishArray.push(finishSquare);
         });
         boardRoad.finishArray = finishArray
@@ -701,6 +701,7 @@ class GameControl{
         while(turn.timesThrowed < 3){
             timeout = setTimeout(GameControl.throwDices,10*1000);
             UiControl.activateBtnDices();
+            game.currentDiceValues = [1,1];
             do{
                 await Timer.sleep(100);
                 console.log('Esperando a que lance en getOutHouse');
@@ -736,30 +737,48 @@ class GameControl{
     static searchSquareById(squareId){
         let boardRoad = GameControl._currentGame.boardRoad;
         let square = boardRoad.first;
-        let sw = 0;
-        while(!boardRoad.isEnd(square) || sw === 0){
-            sw = 1;
-            if(squareId.includes(square.color)){
-                for(let i = 0; i<3;i++){
-                    if(squareId === square.id){
-                        return square;
+        if(squareId.includes('Finish')){
+            square = GameControl.searchFinishSquare(squareId);
+            return square
+        }else{
+            let sw = 0;
+            while(!boardRoad.isEnd(square) || sw === 0){
+                sw = 1;
+                if(squareId.includes(square.color)){
+                    for(let i = 0; i<3;i++){
+                        if(squareId === square.id){
+                            return square;
+                        }
+                        square = square.next;
                     }
-                    square = square.next;
+                } else{
+                    square = square.next.next.next;
                 }
-            } else{
-                square = square.next.next.next;
+            }
+        }
+        
+    }
+
+    static searchFinishSquare(id){
+        let finishArray = GameControl._currentGame.boardRoad.finishArray;
+        for(let i = 0; i< finishArray.length; i++){
+            if(finishArray[i].id === id){
+                return finishArray[i];
             }
         }
     }
 
+
     static moveTab(tabUi, squareUi){
+        console.log('El squareUi en move tab es: ')
+        console.log(squareUi);
         let game = GameControl._currentGame;
         let turn = game.currentTurn;
         let tab = GameControl.searchTabById(tabUi.getAttribute('id'));
         let square = GameControl.searchSquareById(squareUi.getAttribute('id'));
         if(square.type === 'Finish'){
             tab.state = 'finish';
-            game.gameFinished = GameControl.gameFinished(tab); 
+            game.isFinished = GameControl.gameFinished(game); 
         }
         if(tab.state === 'house'){
             this.jailAllTabsInside(tab, square);
@@ -780,27 +799,24 @@ class GameControl{
             UiControl.desactivateSquareUI(squareUi);
             GameControl._tabSelected = null
         }
+        if(GameControl.isDicePar(game) && turn.timesThrowed === 2){
+            UiControl.desactivateWinnableTabs(turn);
+        }
         turn.doMovement = true;
     }
 
-    static gameFinished(tab){
-        let game = GameControl._currentGame;
-        let players = game.players;
+    static gameFinished(game){
+        console.log('Pasa por gameFinished');
+        let tabsArray = game.currentTurn.player.tabsArray;
         let flag = true;
-        let tabsArray;
-        let auxiliarTab;
-        for(let i = 0; i< players.lenght; i++){
-            if (players[i].color === tab.color){
-                tabsArray = players.tabsArray;
-                for(let j = 0; j< tabsArray.lenght;j++){
-                    auxiliarTab = tabsArray[j];
-                    if(tab.state !== 'Finished'){
-                        flag = false;
-                        break;
-                    }
-                }
+        let tab;
+        for(let i = 0; i< tabsArray.length; i++){
+            tab = tabsArray[i];
+            if(tab.state !== 'finish'){
+                console.log('Pasa por el if de gameFinished')
+                flag = false;
+                break;
             }
-            break
         }
         return flag;
     }
@@ -865,11 +881,10 @@ class GameControl{
             do{
                 await Timer.sleep(1000);
             }while(!action.isFinished);
-            action = Action.generateNewAction();
-            action.doAction1(turn,action,UiControl.activateWinnableTabs);
+            UiControl.activateWinnableTabs(turn);
             do{
                 await Timer.sleep(1000);
-            }while(!action.isFinished);
+            }while(!turn.doMovement);
         }
         else{
             let tabsArray = turn.player.tabsArray;
@@ -975,14 +990,17 @@ class GameControl{
 
     static selectWinnerTab(tabUi){
         let game = GameControl._currentGame;
+        let finishSquare;
         let finishArray = game.boardRoad.finishArray;
+        console.log(finishArray);
         let tab = GameControl.searchTabById(tabUi.getAttribute('id'));
-        for(let i = 0; i<finishArray.lenght; i++){
+        for(let i = 0; i<finishArray.length; i++){
             if(tab.color === finishArray[i].color){
-                let finishSquare = finishArray[i];
+                finishSquare = finishArray[i];
                 break;
             }
         }
+        console.log(finishSquare.id);
         let finishSquareUi = document.getElementById(finishSquare.id);
         GameControl.moveTab(tabUi, finishSquareUi);
     }
@@ -1077,12 +1095,15 @@ class GameControl{
             do{
                 await Timer.sleep(1000);
             }while(!action.isFinished);
-            if(GameControl.isDicePar(game)){
+            if(GameControl.isDicePar(game) && game.currentTurn.timesThrowed < 2){
                 GameControl.repeatTurn(game.currentTurn);  
+            }else if (GameControl.isDicePar(game) && game.currentTurn.timesThrowed === 2){
+                GameControl.nextTurn(game.currentTurn); //*Se debe actualizar game.currentTurn dentro de la función
             }else{
                 GameControl.nextTurn(game.currentTurn); //*Se debe actualizar game.currentTurn dentro de la función
             }
         }while(!game.isFinished);
+        console.log('JUEGO TERMINADO')
         //TODO ---- Poner pantalla final.
     }
 }
@@ -1289,13 +1310,23 @@ class UiControl{
     static activateWinnableTabs(turn){
         let tabsArray = turn.player.tabsArray;
         let tabUi;
-        console.log('Este es el tabs Array ----------------------')
-        console.log(tabsArray);
         tabsArray.forEach(tab =>{
             if(tab.state === 'playing'){
                 tabUi = document.getElementById(tab.id);
                 tabUi.classList.add('tab-active');
                 tabUi.addEventListener('click', EventControl.evtWinnerTab)
+            }
+        });
+    }
+
+    static desactivateWinnableTabs(turn){
+        let tabsArray = turn.player.tabsArray;
+        let tabUi;
+        tabsArray.forEach(tab =>{
+            if(tab.state === 'playing' || 'finish'){
+                tabUi = document.getElementById(tab.id);
+                tabUi.classList.remove('tab-active');
+                tabUi.removeEventListener('click', EventControl.evtWinnerTab)
             }
         });
     }

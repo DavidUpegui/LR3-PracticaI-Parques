@@ -38,6 +38,7 @@ html, body {
     align-items: center;
     flex-direction: column;
     margin: 30% 8px 8px 8px;
+    margin-bottom: 100px;
 }
 .btn-dices{
     width: 60%;
@@ -99,6 +100,12 @@ html, body {
     outline: none;
     border-color: blueviolet;
     box-shadow: 0 0 15px blueviolet;
+}
+
+.finish{
+    width: 80px;
+    height: 80px;
+    position: absolute;
 }
 
 #tablero {
@@ -185,6 +192,69 @@ html, body {
 #redSeguroDos{
     margin-top: 510px;
     margin-left: 714px;                                                           
+}
+
+#blueFinish{
+    margin-top: 330px;
+    margin-left: 410px;
+}
+
+#yellowFinish{
+    margin-top: 410px;
+    margin-left: 330px;
+}
+
+#greenFinish{
+    margin-top: 410px;
+    margin-left: 490px;
+}
+
+#redFinish{
+    margin-top: 490px;
+    margin-left: 410px;
+}
+
+#contDados{
+    height: 350px;
+    width: 400px;
+    border: 5px solid blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: rgb(120, 120, 239);
+    color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 4px;
+    transition-duration: 300ms ;
+}
+
+#controles{
+    height: 550px;
+    width: 400px;
+    border: 5px solid blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#panel{
+    justify-content: center;
+}
+
+#btnDices{
+    margin-top: 20px;
+    height: 50px;
+    width: 50px;
+}
+
+#alert{
+    width: 390px;
+    height: 120px;
+    border: 5px dotted rgb(120, 120, 239);
 }
 
 .tab {

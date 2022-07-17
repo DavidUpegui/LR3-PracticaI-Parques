@@ -23,14 +23,12 @@ html, body {
 .casillaHorizontal{
     height: 40px;
     width: 80px;
-    background-color: aqua;
     position: absolute;
 }
 
 .casillaDiagonalUno{
     height: 40px;
     width: 80px;
-    background-color: palevioletred;
     position: absolute;
     transform: rotate(60deg);
 }
@@ -38,10 +36,59 @@ html, body {
 .casillaDiagonalDos{
     height: 40px;
     width: 80px;
-    background-color: blue;
     position: absolute;
     transform: rotate(-60deg);
 }
+
+.dice-container{
+    display: flex;
+    justify-content: center;
+    margin: 5px;
+}
+
+.dice-img img{
+    height: 100px;
+    width: 100px;
+    margin: 3px;
+    border-radius: 5px;
+}
+
+.dice-control{
+    background-color: rgb(203, 251, 251);
+    padding: 15px;
+    margin-top: 20%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 30% 8px 8px 8px;
+    margin-bottom: 100px;
+}
+.btn-dices{
+    width: 60%;
+    margin: 10px 0;
+    height: 35px;
+    background-color: rgb(120, 120, 239);
+    color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 4px;
+    transition-duration: 300ms ;
+}
+
+.btn-dices:hover{
+    background-color: rgb(88, 88, 240);
+    cursor: pointer;
+    width: 70%;
+    transition-duration: 300ms ;
+}
+
+.finish{
+    width: 80px;
+    height: 80px;
+    position: absolute;
+}
+
 
 #tablero {
     height: 900px;
@@ -170,6 +217,83 @@ html, body {
     margin-top: 500px;
 }
 
+#pinkFinish{
+    margin-top: 300px;
+    margin-left: 410px;
+}
+
+#orangeFinish{
+    transform: rotate(60deg);
+    margin-top: 355px;
+    margin-left: 505px;
+}
+
+#blueFinish{
+    transform: rotate(-60deg);
+    margin-top: 465px;
+    margin-left: 505px;
+}
+
+#yellowFinish{
+    margin-top: 520px;
+    margin-left: 410px;
+}
+
+#redFinish{
+    transform: rotate(60deg);
+    margin-top: 465px;
+    margin-left: 315px;
+}
+
+#greenFinish{
+    transform: rotate(-60deg);
+    margin-top: 355px;
+    margin-left: 315px;
+}
+
+#contDados{
+    height: 350px;
+    width: 400px;
+    border: 5px solid blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: rgb(120, 120, 239);
+    color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 4px;
+    transition-duration: 300ms ;
+}
+
+#controles{
+    height: 550px;
+    width: 400px;
+    border: 5px solid blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#panel{
+    justify-content: center;
+}
+
+#btnDices{
+    margin-top: 20px;
+    height: 50px;
+    width: 50px;
+}
+
+#alert{
+    width: 390px;
+    height: 120px;
+    border: 5px dotted rgb(120, 120, 239);
+}
+
 .tab {
     width: 30px;
     height: 30px;
@@ -198,4 +322,9 @@ html, body {
 }
 .orangeTab{
     background-color: rgb(244, 176, 49);
+}
+
+.dado{
+    height: 100px;
+    width: 100px;
 }
