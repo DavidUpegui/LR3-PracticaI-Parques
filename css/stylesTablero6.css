@@ -23,14 +23,12 @@ html, body {
 .casillaHorizontal{
     height: 40px;
     width: 80px;
-    background-color: aqua;
     position: absolute;
 }
 
 .casillaDiagonalUno{
     height: 40px;
     width: 80px;
-    background-color: palevioletred;
     position: absolute;
     transform: rotate(60deg);
 }
@@ -38,7 +36,6 @@ html, body {
 .casillaDiagonalDos{
     height: 40px;
     width: 80px;
-    background-color: blue;
     position: absolute;
     transform: rotate(-60deg);
 }
@@ -85,6 +82,13 @@ html, body {
     width: 70%;
     transition-duration: 300ms ;
 }
+
+.finish{
+    width: 80px;
+    height: 80px;
+    position: absolute;
+}
+
 
 #tablero {
     height: 900px;
@@ -211,6 +215,40 @@ html, body {
 #greenSeguroDos{
     margin-left: 130px;
     margin-top: 500px;
+}
+
+#pinkFinish{
+    margin-top: 300px;
+    margin-left: 410px;
+}
+
+#orangeFinish{
+    transform: rotate(60deg);
+    margin-top: 355px;
+    margin-left: 505px;
+}
+
+#blueFinish{
+    transform: rotate(-60deg);
+    margin-top: 465px;
+    margin-left: 505px;
+}
+
+#yellowFinish{
+    margin-top: 520px;
+    margin-left: 410px;
+}
+
+#redFinish{
+    transform: rotate(60deg);
+    margin-top: 465px;
+    margin-left: 315px;
+}
+
+#greenFinish{
+    transform: rotate(-60deg);
+    margin-top: 355px;
+    margin-left: 315px;
 }
 
 #contDados{
