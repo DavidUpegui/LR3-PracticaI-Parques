@@ -98,6 +98,13 @@ html, body {
     background-color: blueviolet;
 }
 
+.finish{
+    width: 80px;
+    height: 80px;
+    background-color: aqua;
+    position: absolute;
+}
+
 #tablero {
     height: 900px;
     width: 900px;
@@ -184,6 +191,26 @@ html, body {
     margin-left: 714px;                                                           
 }
 
+#blueFinish{
+    margin-top: 330px;
+    margin-left: 410px;
+}
+
+#yellowFinish{
+    margin-top: 410px;
+    margin-left: 330px;
+}
+
+#greenFinish{
+    margin-top: 410px;
+    margin-left: 490px;
+}
+
+#redFinish{
+    margin-top: 490px;
+    margin-left: 410px;
+}
+
 #contDados{
     height: 350px;
     width: 400px;
@@ -205,6 +232,10 @@ html, body {
     height: 550px;
     width: 400px;
     border: 5px solid blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 #panel{
@@ -215,6 +246,12 @@ html, body {
     margin-top: 20px;
     height: 50px;
     width: 50px;
+}
+
+#alert{
+    width: 390px;
+    height: 120px;
+    border: 5px dotted rgb(120, 120, 239);
 }
 
 .tab {
