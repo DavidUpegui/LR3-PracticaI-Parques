@@ -29,6 +29,7 @@ html, body {
     width: 80px;
     position: absolute;
     align-items: center;
+    justify-content: center;
 }
 
 .casillaDiagonalUno{
@@ -39,6 +40,7 @@ html, body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 }
 
 .casillaDiagonalDos{
@@ -49,6 +51,7 @@ html, body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 }
 
 .content{
@@ -116,6 +119,7 @@ html, body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 }
 
 .square-showed{
@@ -373,7 +377,7 @@ html, body {
 .casillaDiagonalUno .tab{
     width: 13px;
     height: 13px;
-    margin: 3px;
+    margin: 2px;
     border-radius: 50%;
     z-index: 1000;
     border: solid;
@@ -383,7 +387,7 @@ html, body {
 .finish .tab{
     width: 13px;
     height: 13px;
-    margin: 3px;
+    margin: 2px;
     border-radius: 50%;
     z-index: 1000;
     border: solid;
@@ -393,7 +397,7 @@ html, body {
 .casillaHorizontal .tab{
     width: 13px;
     height: 13px;
-    margin: 3px;
+    margin: 2px;
     border-radius: 50%;
     z-index: 1000;
     border: solid;
@@ -414,7 +418,7 @@ html, body {
 .casillaDiagonalDos .tab-clicked{
     width: 18px;
     height: 18px;
-    margin: 5px;
+    margin: 3px;
     border-radius: 50%;
     z-index: 1000;
     border: solid;
@@ -427,7 +431,7 @@ html, body {
 .casillaDiagonalUno .tab-clicked{
     width: 18px;
     height: 18px;
-    margin: 5px;
+    margin: 3px;
     border-radius: 50%;
     z-index: 1000;
     border: solid;
@@ -439,7 +443,7 @@ html, body {
 .casillaHorizontal .tab-clicked{
     width: 18px;
     height: 18px;
-    margin: 5px;
+    margin: 3px;
     border-radius: 50%;
     z-index: 1000;
     border: solid;
@@ -452,7 +456,7 @@ html, body {
 .casillaVertical .tab-clicked{
     width: 18px;
     height: 18px;
-    margin: 5px;
+    margin: 3px;
     border-radius: 50%;
     z-index: 1000;
     border: solid;

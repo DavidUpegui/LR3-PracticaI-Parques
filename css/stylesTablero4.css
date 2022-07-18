@@ -55,19 +55,20 @@ html, body {
     transition-duration: 300ms ;
 }
 
-.btn{
-    width: 60%;
-    margin: 10px 0;
-    height: 35px;
-    background-color: rgb(120, 120, 239);
-    color: white;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-size: 18px;
-    text-align: center;
-    border-radius: 4px;
+.btn-dices:hover{
+    background-color: rgb(88, 88, 240);
+    width: 70%;
     transition-duration: 300ms ;
 }
 
+.btn-active{
+    border-color:  rgb(95, 95, 245);
+    box-shadow: 0 0 15px 5px  rgb(120, 120, 239);
+}
+
+.btn:hover{
+    cursor: pointer;
+}
 
 .home{
     height: 200px;
@@ -84,6 +85,7 @@ html, body {
     width: 38px;
     position: absolute;
     align-items: center;
+    justify-content: center;
 }
 
 .casillaHorizontal{
@@ -93,6 +95,7 @@ html, body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 }
 
 .square-showed{
@@ -110,6 +113,7 @@ html, body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;git add
 }
 
 #tablero {

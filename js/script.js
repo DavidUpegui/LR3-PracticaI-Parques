@@ -660,14 +660,16 @@ class GameControl{
             }while(game.currentDiceValues[0] === -1);
             clearTimeout(timeout);
             UiControl.desactivateBtnDices();
+
             if(turnsOrderedArray.length === 0){
                 turnsOrderedArray.push([turn, game.currentDiceValues]);
             }
             else{
+                console.log('Pasa por el else del ordenamiento')
                 let sw2 = 0;
                 let i = 0;
                 while(sw2 === 0 && i<turnsOrderedArray.length){
-                    if(turnsOrderedArray[i]> game.currentDiceValues){
+                    if(turnsOrderedArray[i][1]> game.currentDiceValues){
                         sw2 = 1
                     }
                     i++;
@@ -678,13 +680,16 @@ class GameControl{
                     turnsOrderedArray.splice(i-1,0,[turn, game.currentDiceValues]);
                 }
             }
-            turn = turn.next;
             GameControl.clearDiceValues();
+            turn = turn.next;
         }
         round = new Round();
+        console.log(turnsOrderedArray);
         for(let i = turnsOrderedArray.length - 1; i>=0;i--){
+            console.log(turnsOrderedArray[i][0]);
             round.addElement(turnsOrderedArray[i][0]);
         }
+        console.log(round);
         game.round = round;
         UiControl.uploadAlertBar('Termina la ronda de ordenamiento de turno')
         action.finishAction();
@@ -701,7 +706,6 @@ class GameControl{
             do{
                 await Timer.sleep(100);
             }while(game.currentDiceValues[0] === -1);
-            clearTimeout(timeout);
             UiControl.desactivateBtnDices();
             if(GameControl.isDicePar(game)){
                 let tabsArray = turn.player.tabsArray;                
@@ -858,7 +862,6 @@ class GameControl{
             await Timer.sleep(250);
         }while(game.currentDiceValues[0] === -1);
         UiControl.desactivateBtnDices();
-        clearTimeout(timeout);
         do{
             await Timer.sleep(1000);
         }while(!action.isFinished);
@@ -895,7 +898,6 @@ class GameControl{
                 do{
                     await Timer.sleep(250);
                 }while(!turn.doMovement);
-                clearTimeout(timeout);
                 UiControl.desactivateTabs(turn);
             }else{
                 if(GameControl.isDicePar(game) && inHouse){
@@ -903,7 +905,6 @@ class GameControl{
                     do{
                         await Timer.sleep(250);
                     }while(!turn.doMovement);
-                    clearTimeout(timeout);
                     UiControl.desactivateTabs(turn);
                 }
                 action = Action.generateNewAction();
@@ -1362,7 +1363,7 @@ class App{
         let boardSize = sessionStorage.getItem('boardSize');
         let playerNumber = sessionStorage.getItem('playerNumber');
         let tabsNumber = sessionStorage.getItem('tabsNumber');
-        if(boardSize === 4){
+        if(boardSize === '4'){
             Game._colorsArray = GameControl._colorsArray4
         }else{
             Game._colorsArray = GameControl._colorsArray6
