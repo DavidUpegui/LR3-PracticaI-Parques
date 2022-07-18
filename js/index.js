@@ -21,4 +21,23 @@ function evt(e){
     }
 }
 
-document.getElementById('btnSubmit').addEventListener('click', evt)
+function evtRadioButton(e){
+    if(e.target && e.target.tagName === 'INPUT'){
+        let childNodes = playerNumber.childNodes
+        if(e.target.value === '4' && childNodes.length > 10){
+            playerNumber.removeChild(option5)
+            playerNumber.removeChild(option6);
+        }
+        if(e.target.value === '6' && childNodes.length < 10){
+            playerNumber.appendChild(option5);
+            playerNumber.appendChild(option6);
+        } 
+    }
+}
+const playerNumber = document.getElementById('playerNumber');
+document.getElementById('options').addEventListener('click', evtRadioButton);
+document.getElementById('btnSubmit').addEventListener('click', evt);
+const option6=document.getElementById('option6');
+const option5 = document.getElementById('option5');
+playerNumber.removeChild(option6);
+playerNumber.removeChild(option5);

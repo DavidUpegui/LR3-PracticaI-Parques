@@ -409,8 +409,7 @@ class Game{
     _isFinished = false;
     _currentDiceValues = [-1,0];
     _currentTurn;
-
-    static _colorsArray = ['blue', 'yellow', 'red', 'green','orange','pink'];
+    static _colorsArray = []
     
 
     constructor(boardSize, playerNumber,tabsNumber){
@@ -478,7 +477,9 @@ class Game{
 class GameControl{
     static _currentGame;
     static _tabSelected =null;
-    static _squareSelected; 
+    static _colorsArray6 = ['blue', 'orange', 'pink', 'green','red','yellow'];
+    static _colorsArray4 = ['blue', 'yellow', 'red', 'green'];
+
 
     static generateBoardRoad(boardSize){
         let boardRoad = new BoardRoad();
@@ -535,6 +536,7 @@ class GameControl{
     static generateTabs(players, tabsNumber, boardRoad){
         let tab;
         let houseArray = boardRoad.houseArray;
+        console.log(houseArray)
         let arr = [];
         let tabsInside = [];
         players.forEach(player =>{
@@ -630,11 +632,10 @@ class GameControl{
         let n2 = Math.floor(Math.random() * (7 - 1)) + 1;
         game.currentDiceValues = [n1,n2];
         UiControl.showDicesImg(n1,n2);
-        console.log(game.currentDiceValues);
     }
 
     static async orderingRound(game,action){
-        console.log('EMPIEZA ORDERINGROUND');
+        console.log('Empieza OrderingRound');
         let timeout;
         let round = game.round;  
         let turn = game.round.first;
@@ -646,19 +647,17 @@ class GameControl{
             await Timer.sleep(1000);
         }while(!a_alert.isFinished);
         while(!round.isEnd(turn) || sw == 0){
-            // a_alert = Action.generateNewAction();
-            // a_alert.doAction1(turn, a_alert, UiControl.alertNewTurn);
-            // do{
-            //     await Timer.sleep(1000);
-            // }while(!a_alert.isFinished);
+            a_alert = Action.generateNewAction();
+            a_alert.doAction1(turn, a_alert, UiControl.alertNewTurn);
+            do{
+                await Timer.sleep(1000);
+            }while(!a_alert.isFinished);
+
             sw = 1;
-            timeout = setTimeout(GameControl.throwDices,1*1000);
             UiControl.activateBtnDices();
             do{
                 await Timer.sleep(1000);
-                console.log(game.currentDiceValues)
             }while(game.currentDiceValues[0] === -1);
-            console.log('Pasa por acá');
             clearTimeout(timeout);
             UiControl.desactivateBtnDices();
             if(turnsOrderedArray.length === 0){
@@ -687,24 +686,20 @@ class GameControl{
             round.addElement(turnsOrderedArray[i][0]);
         }
         game.round = round;
+        UiControl.uploadAlertBar('Termina la ronda de ordenamiento de turno')
         action.finishAction();
-        console.log('TERMINÓ ORDERING');
-
+        console.log('Termina OrderingRound');
     }
 
     static async getOutHouse(turn, action){
-        console.log('EMPIEZA GETOUTHOUSE');
         let timeout;
         let tabUi;
         let exitUi;
         let game = GameControl._currentGame;
         while(turn.timesThrowed < 3){
-            timeout = setTimeout(GameControl.throwDices,10*1000);
             UiControl.activateBtnDices();
-            game.currentDiceValues = [1,1];
             do{
                 await Timer.sleep(100);
-                console.log('Esperando a que lance en getOutHouse');
             }while(game.currentDiceValues[0] === -1);
             clearTimeout(timeout);
             UiControl.desactivateBtnDices();
@@ -720,13 +715,11 @@ class GameControl{
                 break;
             }else{
                 GameControl.repeatTurn(turn);
-                console.log(turn);
                 await Timer.sleep(1000);
             }
         }
         GameControl.clearDiceValues();
         action.finishAction();
-        console.log('TERMINA GETOUTHOUSE');
     }
 
     static clearDiceValues(){
@@ -770,8 +763,6 @@ class GameControl{
 
 
     static moveTab(tabUi, squareUi){
-        console.log('El squareUi en move tab es: ')
-        console.log(squareUi);
         let game = GameControl._currentGame;
         let turn = game.currentTurn;
         let tab = GameControl.searchTabById(tabUi.getAttribute('id'));
@@ -806,14 +797,12 @@ class GameControl{
     }
 
     static gameFinished(game){
-        console.log('Pasa por gameFinished');
         let tabsArray = game.currentTurn.player.tabsArray;
         let flag = true;
         let tab;
         for(let i = 0; i< tabsArray.length; i++){
             tab = tabsArray[i];
             if(tab.state !== 'finish'){
-                console.log('Pasa por el if de gameFinished')
                 flag = false;
                 break;
             }
@@ -865,13 +854,11 @@ class GameControl{
             await Timer.sleep(1000);
         }while(!action.isFinished);
         UiControl.activateBtnDices();
-        game.currentDiceValues = [3,3];
         do{
-                console.log('Esperando a que lance en normalTurn');
-                await Timer.sleep(250);
+            await Timer.sleep(250);
         }while(game.currentDiceValues[0] === -1);
-        // clearTimeout(timeout);
         UiControl.desactivateBtnDices();
+        clearTimeout(timeout);
         do{
             await Timer.sleep(1000);
         }while(!action.isFinished);
@@ -904,23 +891,19 @@ class GameControl{
             }
             if(canDoMovements){
                 GameControl.verifyCanEat(turn);
-                // timeout = setTimeout(function(){GameControl.moveAutamatically(turn)}, 20*1000);
                 UiControl.activateTabs(turn);  
                 do{
                     await Timer.sleep(250);
-                    console.log('Esperando a que mueva')
                 }while(!turn.doMovement);
-                // clearTimeout(timeout);
+                clearTimeout(timeout);
                 UiControl.desactivateTabs(turn);
             }else{
                 if(GameControl.isDicePar(game) && inHouse){
-                    // timeout = setTimeout(function(){GameControl.moveAutamatically(turn)}, 20*1000);
                     UiControl.activateTabs(turn);  
                     do{
                         await Timer.sleep(250);
-                        console.log('Esperando a que mueva')
                     }while(!turn.doMovement);
-                    // clearTimeout(timeout);
+                    clearTimeout(timeout);
                     UiControl.desactivateTabs(turn);
                 }
                 action = Action.generateNewAction();
@@ -932,7 +915,6 @@ class GameControl{
         }
         if(turn.canEat){
             UiControl.activateBtnSoplar()
-            let timeout2 =  setTimeout(UiControl.desactivateBtnSoplar , 2*1000)
             await Timer.sleep(2000);
         }
         actionPassed.finishAction();
@@ -992,7 +974,6 @@ class GameControl{
         let game = GameControl._currentGame;
         let finishSquare;
         let finishArray = game.boardRoad.finishArray;
-        console.log(finishArray);
         let tab = GameControl.searchTabById(tabUi.getAttribute('id'));
         for(let i = 0; i<finishArray.length; i++){
             if(tab.color === finishArray[i].color){
@@ -1000,7 +981,6 @@ class GameControl{
                 break;
             }
         }
-        console.log(finishSquare.id);
         let finishSquareUi = document.getElementById(finishSquare.id);
         GameControl.moveTab(tabUi, finishSquareUi);
     }
@@ -1020,8 +1000,6 @@ class GameControl{
     }
 
     static repeatTurn(turn){
-        console.log('El turno en repeatTrun');
-        console.log(turn);
         GameControl.clearDiceValues();
         turn.timesThrowed = turn.timesThrowed + 1;
         turn.doMovement = false;
@@ -1037,7 +1015,6 @@ class GameControl{
     }
 
     static async playTurn(turn,actionPassed){
-        console.log('EMPIEZA PLAYTURN')
         let tabsArray = turn.player.tabsArray;
         let inHouse = true;
         for(let i = 0; i<tabsArray.length;i++){
@@ -1066,28 +1043,22 @@ class GameControl{
             }while(!action.isFinished);
         }
         actionPassed.finishAction();
-        console.log('TERMINÓ PLAYTURN')
-    }
-
-    static tabOutHouse(tab, houseSquare){
-        
     }
 
 
     static async startGame(game){
-            // let action;
-            // action = Action.generateNewAction();
-            // action.doAction0(action, UiControl.alertGameStart);
-            // do{
-            //     await Timer.sleep(1000);
-            // }while(!action.isFinished);
-
-            // action = Action.generateNewAction();
-            // action.doAction1(game,action,GameControl.orderingRound);
-            // do{
-            //     await Timer.sleep(1000);
-            // }while(!action.isFinished);
         let action;
+        action = Action.generateNewAction();
+        action.doAction0(action, UiControl.alertGameStart);
+        do{
+            await Timer.sleep(1000);
+        }while(!action.isFinished);
+
+        action = Action.generateNewAction();
+        action.doAction1(game,action,GameControl.orderingRound);
+        do{
+            await Timer.sleep(1000);
+        }while(!action.isFinished);
         game.currentTurn = game.round.first;
         do{
             action = Action.generateNewAction();
@@ -1103,12 +1074,19 @@ class GameControl{
                 GameControl.nextTurn(game.currentTurn); //*Se debe actualizar game.currentTurn dentro de la función
             }
         }while(!game.isFinished);
-        console.log('JUEGO TERMINADO')
         //TODO ---- Poner pantalla final.
     }
 }
 
 class UiControl{
+
+    static uploadAlertBar(mensaje){
+        let alertPanel = document.getElementById('alertPanel');
+        let p = document.createElement('p');
+        p.innerHTML = `<b> - </b>` + mensaje;
+        alertPanel.appendChild(p);
+        alertPanel.scrollTop = alertPanel.scrollHeight;
+    }
 
     static generateTabs(players){
         let tabsArray;
@@ -1134,62 +1112,58 @@ class UiControl{
         alert.classList.add('show-alert');
         await Timer.sleep(3000);
         alert.classList.remove('show-alert');
+        UiControl.uploadAlertBar(`Jugador ${GameControl._currentGame.currentTurn.player.color} vuelve a lanzar`)
     }
 
     static async alertNotPossibleMovements(action){
-        console.log('EMPEZÓ notPossibleMovement');
         let alert = document.getElementById('alert');
         alert.innerHTML = `No tiene movimientos posibles`
         alert.classList.add('show-alert');
         await Timer.sleep(1000);
         alert.classList.remove('show-alert');
-        console.log('TERMINÓ notPossibleMovement');
+        UiControl.uploadAlertBar(`Jugador ${GameControl._currentGame.currentTurn.player.color} no tiene movimientos posibles`)
         action.finishAction();
     }
 
     static async alertNewTurn(turn,action){
-        console.log('Empieza el turno del jugador' + turn.player.color);
         let alert = document.getElementById('alert');
         alert.innerHTML = `Empieza el turno del jugador ${turn.player.color}`
         alert.classList.add('show-alert');
         await Timer.sleep(1000);
         alert.classList.remove('show-alert');
-        console.log('TERMINÓ alertNewTurn');
+        UiControl.uploadAlertBar(`Turno actual: jugador ${turn.player.color}`)
         action.finishAction();
     }
 
     static async alertGameStart(action){
-        console.log('EMPEZÓ ALERTGAMESTART')
         let alert = document.getElementById('alert');
         alert.innerHTML = `Empieza el juego`
         alert.classList.add('show-alert');
         await Timer.sleep(1000);
         alert.classList.remove('show-alert');
         await Timer.sleep(700);
-        console.log('TERMINÓ ALERTGAMESTART');
+        UiControl.uploadAlertBar(`¡Empieza el juego!`)
         action.finishAction();
     }
 
     static async alertOrderingRound(action){
-        console.log('EMPIEZA ALERT ORDERINGROUND');
         let alert = document.getElementById('alert');
         alert.innerHTML = `Ronda para elegir el orden de los turnos`
         alert.classList.add('show-alert');
         await Timer.sleep(1000);
         alert.classList.remove('show-alert');
+        UiControl.uploadAlertBar(`Empieza la Ronda para elegir el orden de los turnos`)
         action.finishAction();
-        console.log('TERMINA ALERT ORDERINGROUND');
     }
 
     static async alertWinnableTabs(action){
-        console.log('EMPIEZA ALERT winnabletabs');
         let alert = document.getElementById('alert');
         alert.innerHTML = `Tres pares seguidos. Elige una ficha para ganar`
         alert.classList.add('show-alert');
         await Timer.sleep(1000);
         alert.classList.remove('show-alert');
+        UiControl.uploadAlertBar(`Tres pares seguidos. Elige una ficha para ganar`)
         action.finishAction();
-        console.log('TERMINA ALERT winnabletabs');
     }
 
     static uncklickAllTabs(turn){
@@ -1218,7 +1192,6 @@ class UiControl{
 
     static tabClicked(tabUI){
         let game = GameControl._currentGame;
-        console.log('La TabUI clickeada es:');
         GameControl._tabSelected = tabUI;
         let tab = GameControl.searchTabById(tabUI.getAttribute('id'));
         if (tabUI.getAttribute('pressed')=== 'false'){
@@ -1255,11 +1228,13 @@ class UiControl{
 
     static activateBtnDices(){
         let btnDices = document.getElementById('btnDices');
+        btnDices.classList.add('btn-active');
         btnDices.addEventListener('click',GameControl.throwDices);
     }
 
     static desactivateBtnDices(){
         let btnDices = document.getElementById('btnDices');
+        btnDices.classList.remove('btn-active');
         btnDices.removeEventListener('click' , GameControl.throwDices);
         /*
         TODO Remover las clases añadidas para que el botón parezca desactivado.
@@ -1387,10 +1362,13 @@ class App{
         let boardSize = sessionStorage.getItem('boardSize');
         let playerNumber = sessionStorage.getItem('playerNumber');
         let tabsNumber = sessionStorage.getItem('tabsNumber');
-
+        if(boardSize === 4){
+            Game._colorsArray = GameControl._colorsArray4
+        }else{
+            Game._colorsArray = GameControl._colorsArray6
+        }
         let game = new Game(boardSize,playerNumber,tabsNumber);
         GameControl._currentGame = game;
-        console.log(game);
         GameControl.startGame(game);
     }
 }

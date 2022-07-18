@@ -16,11 +16,14 @@
         <form method="post">
             <li>
                 <p class="">Elija en qué tablero desea jugar:</p><br><br>
-                <input name="tamañoTablero" type="radio" id="tablero4" value="4" checked="true" class="btn-radio">
-                <label for="tablero4" class="label"> Tablero 4 puestos</label>
-                <br>
-                <input name="tamañoTablero" type="radio" id="tablero6" value="6" class="btn-radio">
-                <label for="tablero6" class="label"> Tablero 6 puestos</label>  
+                <div id="options">
+                    <input name="tamañoTablero" type="radio" id="tablero4" value="4" checked="true" class="btn-radio">
+                    <label for="tablero4" class="label"> Tablero 4 puestos</label>
+                    <br>
+                    <input name="tamañoTablero" type="radio" id="tablero6" value="6" class="btn-radio">
+                    <label for="tablero6" class="label"> Tablero 6 puestos</label>  
+                </div>
+                
             </li>
             <li>
                 <label for="playerNumber">Seleccione el número de jugadores:</label>
@@ -28,8 +31,8 @@
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4" selected="selected">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
+                        <option value="5" id="option5">5</option>
+                        <option value="6" id="option6">6</option>
                     </select>
             </li>
             <li>
