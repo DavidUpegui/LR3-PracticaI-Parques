@@ -346,11 +346,22 @@ class Action{
     static _actionsArray = [];
     _isFinished;
 
+    /**
+     * 
+     * @param {Action} action La acción que ejecuta doAction1
+     * @param {function} f La función que se desea ejecutar
+     */
     doAction0(action,f){
         this.isFinished = false;
         f(action);
     }
 
+    /**
+     * 
+     * @param {param} functionParameter El parametro de la función que se desee ejecutar
+     * @param {Action} action La acción que ejecuta doAction1
+     * @param {function} f La función que se desea ejecutar
+     */
     doAction1(functionParameter,action, f ){
         this.isFinished  = false;
         f(functionParameter,action);
@@ -536,7 +547,6 @@ class GameControl{
     static generateTabs(players, tabsNumber, boardRoad){
         let tab;
         let houseArray = boardRoad.houseArray;
-        console.log(houseArray)
         let arr = [];
         let tabsInside = [];
         players.forEach(player =>{
@@ -581,6 +591,11 @@ class GameControl{
         }
     }
 
+    /**
+     * 
+     * @param {Tab} tab 
+     * @returns {array<Square}
+     */
     static availableSquares(tab){
         let currentSquare = tab.currentSquare;
         let game = GameControl._currentGame;
@@ -611,17 +626,18 @@ class GameControl{
                     }
                     break;
                 case 'SeguroDos':
-                if((n1+n2 === 5) || (n1 === 5) || (n2 === 5)){
-                    availablesSquares.push(tab.currentSquare.next);
-                }
-                if(n1+n2 === 10){
-                    availablesSquares.push(tab.currentSquare.next.next);
-                }
+                    if((n1+n2 === 5) || (n1 === 5) || (n2 === 5)){
+                        availablesSquares.push(tab.currentSquare.next);
+                    }
+                    if(n1+n2 === 10){
+                        availablesSquares.push(tab.currentSquare.next.next);
+                    }
                 break;
                 case 'House':
                     if(GameControl.isDicePar(game)){
                         availablesSquares.push(tab.currentSquare.next);
                     }
+                break;
         }
     return availablesSquares;
     }
@@ -634,8 +650,12 @@ class GameControl{
         UiControl.showDicesImg(n1,n2);
     }
 
+    /**
+     * 
+     * @param {game} game El juego actual
+     * @param {Action} action La acción que ejecuta la función
+     */
     static async orderingRound(game,action){
-        console.log('Empieza OrderingRound');
         let timeout;
         let round = game.round;  
         let turn = game.round.first;
@@ -665,7 +685,6 @@ class GameControl{
                 turnsOrderedArray.push([turn, game.currentDiceValues]);
             }
             else{
-                console.log('Pasa por el else del ordenamiento')
                 let sw2 = 0;
                 let i = 0;
                 while(sw2 === 0 && i<turnsOrderedArray.length){
@@ -684,18 +703,19 @@ class GameControl{
             turn = turn.next;
         }
         round = new Round();
-        console.log(turnsOrderedArray);
         for(let i = turnsOrderedArray.length - 1; i>=0;i--){
-            console.log(turnsOrderedArray[i][0]);
             round.addElement(turnsOrderedArray[i][0]);
         }
-        console.log(round);
         game.round = round;
         UiControl.uploadAlertBar('Termina la ronda de ordenamiento de turno')
         action.finishAction();
-        console.log('Termina OrderingRound');
     }
 
+    /**
+     * 
+     * @param {Turn} turn El turno actual en el juego
+     * @param {Action} action La acción que ejecuta la función
+     */
     static async getOutHouse(turn, action){
         let timeout;
         let tabUi;
@@ -753,7 +773,6 @@ class GameControl{
                 }
             }
         }
-        
     }
 
     static searchFinishSquare(id){
@@ -849,6 +868,11 @@ class GameControl{
         return game.currentDiceValues[0] === game.currentDiceValues[1];
     }
 
+    /**
+     * 
+     * @param {turn} turn El turno actual del juego
+     * @param {Action} actionPassed La acción que ejecuta la función
+     */
     static async normalTurn(turn, actionPassed){
         let game = GameControl._currentGame;
         let action;
@@ -941,7 +965,7 @@ class GameControl{
         }
     }
 
-    static unploadCanEat(tabsArray){
+    static uploadCanEat(tabsArray){
         tabsArray.forEach(tab =>{
             availableSquares = GameControl.availableSquares(tab);
             for(let i = 0; i < availableSquares.length; i++){
